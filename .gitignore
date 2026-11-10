@@ -1,0 +1,64 @@
+# dependencies
+node_modules/
+.pnp/
+.pnp.js
+
+# Expo / React Native
+.expo/
+.expo-shared/
+dist/
+web-build/
+expo-env.d.ts
+.metro-health-check*
+frontend/android/
+frontend/ios/
+*.jks
+*.p8
+*.p12
+*.key
+*.mobileprovision
+*.orig.*
+
+# build output
+build/
+*.apk
+*.aab
+*.ipa
+*.app
+
+# logs
+*.log
+npm-debug.*
+yarn-debug.*
+yarn-error.*
+
+# environment / secrets
+.env
+.env.*
+!.env.example
+*.pem
+
+# python / backend
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+*.sqlite3
+
+# editors
+.vscode/*
+!.vscode/extensions.json
+.idea/
+
+# OS
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# typescript
+*.tsbuildinfo
+
+# CAD scratch output
+CAD/**/*.FCStd1
+CAD/**/*.bak
+CAD/**/*.stl

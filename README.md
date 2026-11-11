@@ -4,12 +4,13 @@ Monorepo for the VoxBCI platform: a single TypeScript codebase that ships to And
 
 ## Structure
 
-| Path        | Purpose                                              |
-| ----------- | ---------------------------------------------------- |
-| `frontend/` | Expo app (SDK 58, React Native 0.88, expo-router)    |
-| `backend/`  | API / services                                       |
-| `CAD/`      | Hardware design files                                |
-| `Docs/`     | Specifications, research, meeting notes              |
+| Path         | Purpose                                              |
+| ------------ | ---------------------------------------------------- |
+| `Frontend/`  | Expo app (SDK 58, React Native 0.88, expo-router)    |
+| `Backend/`   | API / services                                       |
+| `CAD/`       | Hardware design files                                |
+| `Docs/`      | Specifications, plans, meeting notes                 |
+| `Research/`  | Literature, datasets, experiment notes               |
 
 ## Prerequisites
 
@@ -20,7 +21,7 @@ Monorepo for the VoxBCI platform: a single TypeScript codebase that ships to And
 ## Frontend
 
 ```powershell
-cd frontend
+cd Frontend
 npm install          # only after a fresh clone
 npx expo start       # Metro bundler + QR code for Expo Go
 npx expo start --web # run in the browser
@@ -36,7 +37,7 @@ Builds run in EAS cloud, so **no macOS required** for iOS.
 ```powershell
 npm install -g eas-cli
 eas login
-cd frontend
+cd Frontend
 
 # Android APK (shareable, sideloadable)
 eas build -p android --profile preview
@@ -49,7 +50,7 @@ eas build -p android --profile production
 eas build -p ios --profile production
 ```
 
-Profile definitions live in `frontend/eas.json`. `preview` produces an APK for Android; `production` produces an AAB.
+Profile definitions live in `Frontend/eas.json`. `preview` produces an APK for Android; `production` produces an AAB.
 
 ## Notes
 

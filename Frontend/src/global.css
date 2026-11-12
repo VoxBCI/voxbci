@@ -1,4 +1,31 @@
+/*
+ * VoxBCI design tokens — web target.
+ *
+ * React Native ignores this file on iOS/Android; native views read the exact
+ * same values from `src/constants/theme.ts`. Keep both files in sync.
+ *
+ * The palette follows the device theme through `prefers-color-scheme`, so the
+ * browser switches themes with zero JS.
+ *
+ *   light → white page, black text, pale blue secondary
+ *   dark  → navy page, white text, vivid blue secondary
+ */
+
 :root {
+  color-scheme: light;
+
+  --color-background: #ffffff;
+  --color-secondary: #f0f5ff;
+  --color-text: #000000;
+  --color-text-secondary: #4a5a6a;
+  --color-border: rgba(0, 0, 0, 0.1);
+  --color-accent: #007bff;
+
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 20px;
+  --radius-pill: 999px;
+
   --font-display:
     Spline Sans, Inter, ui-sans-serif, system-ui, sans-serif, Apple Color Emoji, Segoe UI Emoji,
     Segoe UI Symbol, Noto Color Emoji;
@@ -6,4 +33,33 @@
     ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, Liberation Mono, Courier New, monospace;
   --font-rounded: 'SF Pro Rounded', 'Hiragino Maru Gothic ProN', Meiryo, 'MS PGothic', sans-serif;
   --font-serif: Georgia, 'Times New Roman', serif;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    color-scheme: dark;
+
+    --color-background: #00254c;
+    --color-secondary: #007bff;
+    --color-text: #ffffff;
+    --color-text-secondary: rgba(255, 255, 255, 0.72);
+    --color-border: rgba(255, 255, 255, 0.18);
+    --color-accent: #007bff;
+  }
+}
+
+/*
+ * The app fills the viewport, so the document itself has to carry the theme
+ * colours — otherwise the browser paints a white/black flash behind the RN
+ * root while the bundle boots and whenever the user overscrolls on mobile web.
+ */
+html,
+body {
+  background-color: var(--color-background);
+  color: var(--color-text);
+}
+
+::selection {
+  background-color: var(--color-secondary);
+  color: var(--color-text);
 }

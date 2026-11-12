@@ -1,26 +1,36 @@
 import { TabList, TabSlot, TabTrigger, Tabs } from 'expo-router/ui';
-import { Pressable, StyleSheet, Text } from 'react-native';
+import { Pressable, StyleSheet } from 'react-native';
+
+import { ThemedText } from '@/components/themed-text';
+import { Spacing } from '@/constants/theme';
+import { useTheme } from '@/hooks/use-theme';
 
 export default function AppTabs() {
+  const theme = useTheme();
+
   return (
     <Tabs>
       <TabSlot />
-      <TabList style={styles.tabList}>
+      <TabList
+        style={[
+          styles.tabList,
+          { backgroundColor: theme.background, borderTopColor: theme.border },
+        ]}>
         <TabTrigger name="home" href="/home" asChild>
           <Pressable>
-            <Text>Home</Text>
+            <ThemedText type="small">Home</ThemedText>
           </Pressable>
         </TabTrigger>
 
         <TabTrigger name="chats" href="/chats" asChild>
           <Pressable>
-            <Text>Chats</Text>
+            <ThemedText type="small">Chats</ThemedText>
           </Pressable>
         </TabTrigger>
 
         <TabTrigger name="settings" href="/settings" asChild>
           <Pressable>
-            <Text>Settings</Text>
+            <ThemedText type="small">Settings</ThemedText>
           </Pressable>
         </TabTrigger>
       </TabList>
@@ -32,6 +42,7 @@ const styles = StyleSheet.create({
   tabList: {
     flexDirection: 'row',
     justifyContent: 'space-around',
-    paddingVertical: 12,
+    paddingVertical: Spacing.three,
+    borderTopWidth: StyleSheet.hairlineWidth,
   },
 });

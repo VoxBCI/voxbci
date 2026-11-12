@@ -1,6 +1,20 @@
 /**
- * Below are the colors that are used in the app. The colors are defined in the light and dark mode.
- * There are many other ways to style your app. For example, [Nativewind](https://www.nativewind.dev/), [Tamagui](https://tamagui.dev/), [unistyles](https://unistyl.es/), etc.
+ * Design tokens for the app.
+ *
+ * Every semantic colour name exists in BOTH palettes — `ThemeColor` is derived
+ * from that guarantee, so a view can ask for `type="secondary"` and get the
+ * right value in light and dark without branching.
+ *
+ * Lookup flow:
+ *   device theme (useColorScheme)
+ *     → 'light' | 'dark'            (src/hooks/use-theme.ts)
+ *     → Colors[scheme]              (this file)
+ *
+ * Web mirror: src/global.css exposes the same values as CSS variables and
+ * switches on `prefers-color-scheme`. Keep the two in sync.
+ *
+ *   light → white page, black text, pale blue secondary (#F0F5FF)
+ *   dark  → navy page, white text, vivid blue secondary (#007BFF)
  */
 
 import '@/global.css';
@@ -9,21 +23,30 @@ import { Platform } from 'react-native';
 
 export const Colors = {
   light: {
+    /** Page background. */
+    background: '#FFFFFF',
+    /** Raised surfaces: cards, pills, selected tab, chips. */
+    secondary: '#F0F5FF',
+    /** Primary copy. */
     text: '#000000',
-    background: '#ffffff',
-    backgroundElement: '#F0F0F3',
-    backgroundSelected: '#E0E1E6',
-    textSecondary: '#60646C',
+    /** Captions, hints, metadata. */
+    textSecondary: '#4A5A6A',
+    /** Hairlines and dividers. */
+    border: 'rgba(0, 0, 0, 0.10)',
+    /** Brand blue used for interactive emphasis. */
+    accent: '#007BFF',
   },
   dark: {
-    text: '#ffffff',
-    background: '#000000',
-    backgroundElement: '#212225',
-    backgroundSelected: '#2E3135',
-    textSecondary: '#B0B4BA',
+    background: '#00254C',
+    secondary: '#007BFF',
+    text: '#FFFFFF',
+    textSecondary: 'rgba(255, 255, 255, 0.72)',
+    border: 'rgba(255, 255, 255, 0.18)',
+    accent: '#007BFF',
   },
 } as const;
 
+export type ColorScheme = keyof typeof Colors;
 export type ThemeColor = keyof typeof Colors.light & keyof typeof Colors.dark;
 
 export const Fonts = Platform.select({
@@ -59,6 +82,13 @@ export const Spacing = {
   four: 24,
   five: 32,
   six: 64,
+} as const;
+
+export const Radius = {
+  sm: 8,
+  md: 12,
+  lg: 20,
+  pill: 999,
 } as const;
 
 export const BottomTabInset = Platform.select({ ios: 50, android: 80 }) ?? 0;

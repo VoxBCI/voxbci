@@ -16,13 +16,13 @@ import { useTheme } from '@/hooks/use-theme';
 const ICON_SIZE = 26;
 
 /**
- * Google Material Symbols glyph names. `groups_2` and `face_4` only exist in
- * the newer Material Symbols set (https://fonts.google.com/icons) — the older
- * Material Icons font that ships with `@expo/vector-icons` has no such glyphs.
+ * Google Material Symbols glyph names. `person_pin_circle` and `face_4` only
+ * exist in the newer Material Symbols set (https://fonts.google.com/icons) —
+ * the Material Icons font bundled with `@expo/vector-icons` has no such glyphs.
  */
-type SymbolName = 'dashboard' | 'groups_2' | 'mail' | 'face_4';
+type SymbolName = 'dashboard' | 'person_pin_circle' | 'mail' | 'face_4';
 
-const SYMBOLS: SymbolName[] = ['dashboard', 'groups_2', 'mail', 'face_4'];
+const SYMBOLS: SymbolName[] = ['dashboard', 'person_pin_circle', 'mail', 'face_4'];
 
 /**
  * Material Symbols draws each icon name as a ligature, so the string
@@ -118,7 +118,7 @@ export default function AppTabs() {
         </TabTrigger>
 
         <TabTrigger name="community" href="/community" asChild>
-          <TabIcon icon="groups_2" label="Community" ready={fontReady} />
+          <TabIcon icon="person_pin_circle" label="Community" ready={fontReady} />
         </TabTrigger>
 
         <TabTrigger name="chats" href="/chats" asChild>

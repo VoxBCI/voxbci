@@ -16,7 +16,7 @@ export default function AppTabs() {
       </NativeTabs.Trigger>
 
       <NativeTabs.Trigger name="community">
-        <NativeTabs.Trigger.Icon sf="person.2" md="groups_2" />
+        <NativeTabs.Trigger.Icon sf="person.crop.circle" md="person_pin_circle" />
         <NativeTabs.Trigger.Label hidden>Community</NativeTabs.Trigger.Label>
       </NativeTabs.Trigger>
 

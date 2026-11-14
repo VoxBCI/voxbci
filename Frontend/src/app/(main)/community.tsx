@@ -13,7 +13,7 @@ function matchesQuery(person: Person, needle: string) {
   return `${person.name} ${person.headline}`.toLowerCase().includes(needle);
 }
 
-export default function DiscoveryScreen() {
+export default function CommunityScreen() {
   const theme = useTheme();
   const router = useRouter();
   const [query, setQuery] = useState('');
@@ -27,7 +27,7 @@ export default function DiscoveryScreen() {
   return (
     <ThemedView style={styles.screen}>
       <View style={styles.content}>
-        <ThemedText type="subtitle">Discovery</ThemedText>
+        <ThemedText type="subtitle">Community</ThemedText>
 
         <TextInput
           accessibilityLabel="Search people to chat with"

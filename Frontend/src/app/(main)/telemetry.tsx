@@ -4,13 +4,13 @@ import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import { MaxContentWidth, Radius, Spacing } from '@/constants/theme';
 
-export default function HomeScreen() {
+export default function TelemetryScreen() {
   return (
     <ThemedView style={styles.screen}>
       <View style={styles.content}>
-        <ThemedText type="subtitle">Home</ThemedText>
+        <ThemedText type="subtitle">Telemetry</ThemedText>
         <ThemedText themeColor="textSecondary" type="small">
-          Placeholder — dashboard is still being designed.
+          Placeholder — session telemetry is still being designed.
         </ThemedText>
 
         <ThemedView type="secondary" style={styles.card}>

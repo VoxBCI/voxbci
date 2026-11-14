@@ -10,23 +10,23 @@ import { NativeTabs } from 'expo-router/native-tabs';
 export default function AppTabs() {
   return (
     <NativeTabs>
-      <NativeTabs.Trigger name="home">
-        <NativeTabs.Trigger.Icon sf="house" md="home" />
-        <NativeTabs.Trigger.Label hidden>Home</NativeTabs.Trigger.Label>
+      <NativeTabs.Trigger name="telemetry">
+        <NativeTabs.Trigger.Icon sf="speedometer" md="dashboard" />
+        <NativeTabs.Trigger.Label hidden>Telemetry</NativeTabs.Trigger.Label>
       </NativeTabs.Trigger>
 
-      <NativeTabs.Trigger name="discovery">
-        <NativeTabs.Trigger.Icon sf="map" md="map" />
-        <NativeTabs.Trigger.Label hidden>Discovery</NativeTabs.Trigger.Label>
+      <NativeTabs.Trigger name="community">
+        <NativeTabs.Trigger.Icon sf="person.2" md="groups_2" />
+        <NativeTabs.Trigger.Label hidden>Community</NativeTabs.Trigger.Label>
       </NativeTabs.Trigger>
 
       <NativeTabs.Trigger name="chats">
-        <NativeTabs.Trigger.Icon sf="bubble.left.and.bubble.right" md="chat_bubble" />
+        <NativeTabs.Trigger.Icon sf="envelope" md="mail" />
         <NativeTabs.Trigger.Label hidden>Chats</NativeTabs.Trigger.Label>
       </NativeTabs.Trigger>
 
       <NativeTabs.Trigger name="settings">
-        <NativeTabs.Trigger.Icon sf="gearshape" md="settings" />
+        <NativeTabs.Trigger.Icon sf="face.smiling" md="face_4" />
         <NativeTabs.Trigger.Label hidden>Settings</NativeTabs.Trigger.Label>
       </NativeTabs.Trigger>
     </NativeTabs>

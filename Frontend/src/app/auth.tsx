@@ -17,7 +17,7 @@ export default function AuthScreen() {
       </ThemedText>
 
       <Pressable
-        onPress={() => router.replace('/home')}
+        onPress={() => router.replace('/telemetry')}
         style={({ pressed }) => [
           styles.button,
           { backgroundColor: theme.secondary, opacity: pressed ? 0.8 : 1 },

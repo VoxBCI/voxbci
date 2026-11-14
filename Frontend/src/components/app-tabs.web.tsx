@@ -1,16 +1,70 @@
-import MaterialIcons from '@expo/vector-icons/MaterialIcons';
+import { Asset } from 'expo-asset';
 import { TabList, TabSlot, TabTrigger, Tabs } from 'expo-router/ui';
 import { forwardRef, useEffect, useState, type ComponentRef } from 'react';
-import { Pressable, StyleSheet, type PressableProps, View } from 'react-native';
+import {
+  Pressable,
+  StyleSheet,
+  Text,
+  type PressableProps,
+  type TextStyle,
+  View,
+} from 'react-native';
 
 import { Spacing } from '@/constants/theme';
 import { useTheme } from '@/hooks/use-theme';
 
 const ICON_SIZE = 26;
 
+/**
+ * Google Material Symbols glyph names. `groups_2` and `face_4` only exist in
+ * the newer Material Symbols set (https://fonts.google.com/icons) — the older
+ * Material Icons font that ships with `@expo/vector-icons` has no such glyphs.
+ */
+type SymbolName = 'dashboard' | 'groups_2' | 'mail' | 'face_4';
+
+const SYMBOLS: SymbolName[] = ['dashboard', 'groups_2', 'mail', 'face_4'];
+
+/**
+ * Material Symbols draws each icon name as a ligature, so the string
+ * "groups_2" renders as a single glyph. We bundle a ~2 KB subset holding just
+ * the four tab icons instead of pulling the full font from a CDN.
+ */
+const FONT_FAMILY = 'VoxMaterialSymbols';
+const FONT_STYLE_ID = 'vox-material-symbols';
+const FONT_ASSET = require('../../assets/fonts/material-symbols-outlined-subset.woff2');
+
+function useSymbolFont() {
+  const [ready, setReady] = useState(false);
+
+  useEffect(() => {
+    let active = true;
+
+    if (!document.getElementById(FONT_STYLE_ID)) {
+      const asset = Asset.fromModule(FONT_ASSET);
+      const style = document.createElement('style');
+      style.id = FONT_STYLE_ID;
+      style.textContent = `@font-face{font-family:'${FONT_FAMILY}';src:url("${asset.localUri ?? asset.uri}") format('woff2');font-style:normal;font-weight:normal;font-display:block;}`;
+      document.head.appendChild(style);
+    }
+
+    document.fonts
+      .load(`${ICON_SIZE}px "${FONT_FAMILY}"`, SYMBOLS.join(' '))
+      .then(() => {
+        if (active) setReady(true);
+      })
+      .catch((error) => console.warn('Material Symbols font failed to load', error));
+
+    return () => {
+      active = false;
+    };
+  }, []);
+
+  return ready;
+}
+
 type TabIconProps = Omit<PressableProps, 'children'> & {
-  /** Material Icons glyph name. https://icons.expo.fyi */
-  icon: keyof typeof MaterialIcons.glyphMap;
+  /** Material Symbols glyph name. */
+  icon: SymbolName;
   /** Accessible name — the tab bar itself is icon-only. */
   label: string;
   /** Hides the glyph until the icon font finishes loading (web only). */
@@ -33,32 +87,23 @@ const TabIcon = forwardRef<ComponentRef<typeof View>, TabIconProps>(function Tab
       accessibilityState={{ selected: isFocused }}
       style={(state) => [styles.tab, typeof style === 'function' ? style(state) : style]}
       {...rest}>
-      <MaterialIcons
-        color={isFocused ? theme.accent : theme.textSecondary}
-        name={icon}
-        size={ICON_SIZE}
-        style={{ opacity: ready ? 1 : 0 }}
-      />
+      <Text
+        accessibilityElementsHidden
+        aria-hidden
+        importantForAccessibility="no-hide-descendants"
+        style={[
+          styles.glyph,
+          { color: isFocused ? theme.accent : theme.textSecondary, opacity: ready ? 1 : 0 },
+        ]}>
+        {icon}
+      </Text>
     </Pressable>
   );
 });
 
 export default function AppTabs() {
   const theme = useTheme();
-
-  // @expo/vector-icons self-loads its font on mount, but the web class component
-  // hydrates with an empty glyph first. Loading it up front avoids blank icons.
-  const [fontLoaded, setFontLoaded] = useState(false);
-
-  useEffect(() => {
-    let active = true;
-    MaterialIcons.loadFont()
-      .then(() => active && setFontLoaded(true))
-      .catch((error) => console.warn('MaterialIcons font failed to load', error));
-    return () => {
-      active = false;
-    };
-  }, []);
+  const fontReady = useSymbolFont();
 
   return (
     <Tabs>
@@ -68,20 +113,20 @@ export default function AppTabs() {
           styles.tabList,
           { backgroundColor: theme.background, borderTopColor: theme.border },
         ]}>
-        <TabTrigger name="home" href="/home" asChild>
-          <TabIcon icon="home" label="Home" ready={fontLoaded} />
+        <TabTrigger name="telemetry" href="/telemetry" asChild>
+          <TabIcon icon="dashboard" label="Telemetry" ready={fontReady} />
         </TabTrigger>
 
-        <TabTrigger name="discovery" href="/discovery" asChild>
-          <TabIcon icon="map" label="Discovery" ready={fontLoaded} />
+        <TabTrigger name="community" href="/community" asChild>
+          <TabIcon icon="groups_2" label="Community" ready={fontReady} />
         </TabTrigger>
 
         <TabTrigger name="chats" href="/chats" asChild>
-          <TabIcon icon="chat-bubble-outline" label="Chats" ready={fontLoaded} />
+          <TabIcon icon="mail" label="Chats" ready={fontReady} />
         </TabTrigger>
 
         <TabTrigger name="settings" href="/settings" asChild>
-          <TabIcon icon="settings" label="Settings" ready={fontLoaded} />
+          <TabIcon icon="face_4" label="Settings" ready={fontReady} />
         </TabTrigger>
       </TabList>
     </Tabs>
@@ -101,4 +146,12 @@ const styles = StyleSheet.create({
     paddingHorizontal: Spacing.four,
     paddingVertical: Spacing.two,
   },
+  glyph: {
+    fontFamily: FONT_FAMILY,
+    fontSize: ICON_SIZE,
+    lineHeight: ICON_SIZE,
+    textAlign: 'center',
+    // Not part of RN's TextStyle type, but react-native-web forwards it.
+    fontFeatureSettings: "'liga' 1",
+  } as TextStyle,
 });

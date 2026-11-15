@@ -11,6 +11,7 @@ import {
   EEG_WINDOW_SECONDS,
   type EegTrace,
 } from '@/data/eeg';
+import { useThemeScheme } from '@/hooks/use-theme';
 
 const ROW_HEIGHT = 56;
 const TOP_PADDING = 10;
@@ -19,19 +20,39 @@ const GUTTER = 54;
 const RIGHT_PADDING = 12;
 
 /**
- * The plot is always a dark console card: the primary dark-mode background
- * (`#00254C`) with on-dark ink. On a light page it reads as a deliberate dark
- * panel instead of a white card that disappears into the background.
+ * The card follows the device theme, but never sits on the page background:
+ * light mode uses the pale-blue surface (`Colors.light.secondary`) with navy
+ * ink, dark mode uses the primary navy (`Colors.dark.background`) with on-dark
+ * ink. Both keep the same console layout.
  */
-const PALETTE = {
-  background: '#00254C',
-  border: 'rgba(56, 189, 248, 0.18)',
-  grid: 'rgba(148, 163, 184, 0.13)',
-  midline: 'rgba(148, 163, 184, 0.07)',
-  muted: 'rgba(226, 232, 240, 0.55)',
+const PALETTES = {
+  light: {
+    background: '#F0F5FF',
+    border: 'rgba(0, 37, 76, 0.14)',
+    grid: 'rgba(0, 37, 76, 0.14)',
+    midline: 'rgba(0, 37, 76, 0.07)',
+    muted: 'rgba(0, 37, 76, 0.55)',
+    /** Darker channel inks so the labels stay legible on the pale surface. */
+    labelInk: {
+      'CH 01': '#0284C7',
+      'CH 02': '#7C3AED',
+      'CH 03': '#047857',
+      'CH 04': '#B45309',
+      'CH 05': '#E11D48',
+    } as Record<string, string>,
+  },
+  dark: {
+    background: '#00254C',
+    border: 'rgba(56, 189, 248, 0.18)',
+    grid: 'rgba(148, 163, 184, 0.13)',
+    midline: 'rgba(148, 163, 184, 0.07)',
+    muted: 'rgba(226, 232, 240, 0.55)',
+    /** On navy the trace colours already read well. */
+    labelInk: {} as Record<string, string>,
+  },
 } as const;
 
-type Palette = typeof PALETTE;
+type Palette = (typeof PALETTES)[keyof typeof PALETTES];
 
 const MONO = Fonts.mono;
 
@@ -156,7 +177,7 @@ function Trace({ trace, row, width }: { trace: EegTrace; row: number; width: num
 export function EegChart() {
   const pathname = usePathname();
   const active = pathname === '/telemetry';
-  const palette = PALETTE;
+  const palette = PALETTES[useThemeScheme()];
   const { width: viewportWidth } = useWindowDimensions();
   const [elapsed, setElapsed] = useState(0);
   const [measuredWidth, setMeasuredWidth] = useState(0);
@@ -229,7 +250,7 @@ export function EegChart() {
                 <SvgText
                   x={0}
                   y={top + ROW_HEIGHT / 2 - 4}
-                  fill={channel.color}
+                  fill={palette.labelInk[channel.id] ?? channel.color}
                   fontFamily={MONO}
                   fontSize={10}
                   fontWeight="700"

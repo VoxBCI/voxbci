@@ -1,24 +1,29 @@
 import { StyleSheet, View } from 'react-native';
 
+import { Avatar } from '@/components/avatar';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import { MaxContentWidth, Radius, Spacing } from '@/constants/theme';
-
-const DUMMY_CHATS = [
-  { id: '1', title: 'Morning check-in', preview: 'How are you feeling today?' },
-  { id: '2', title: 'Word practice', preview: 'Let us try three short words.' },
-];
+import { useChats } from '@/hooks/use-chats';
 
 export default function ChatsScreen() {
+  const chats = useChats();
+
   return (
     <ThemedView style={styles.screen}>
       <View style={styles.content}>
-        {DUMMY_CHATS.map((chat) => (
+        {chats.map((chat) => (
           <ThemedView key={chat.id} type="secondary" style={styles.row}>
-            <ThemedText type="smallBold">{chat.title}</ThemedText>
-            <ThemedText type="small" themeColor="textSecondary">
-              {chat.preview}
-            </ThemedText>
+            <Avatar name={chat.name} source={chat.avatar} />
+
+            <View style={styles.rowText}>
+              <ThemedText type="smallBold" numberOfLines={1}>
+                {chat.name}
+              </ThemedText>
+              <ThemedText type="small" themeColor="textSecondary" numberOfLines={1}>
+                {chat.preview}
+              </ThemedText>
+            </View>
           </ThemedView>
         ))}
       </View>
@@ -39,8 +44,15 @@ const styles = StyleSheet.create({
     gap: Spacing.three,
   },
   row: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: Spacing.three,
     borderRadius: Radius.md,
     padding: Spacing.three,
+  },
+  rowText: {
+    flex: 1,
+    minWidth: 0,
     gap: Spacing.half,
   },
 });

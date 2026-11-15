@@ -24,7 +24,8 @@ const styles = StyleSheet.create({
   },
   scrollContent: {
     padding: Spacing.four,
-    paddingBottom: Spacing.five,
+    // Clears the floating tab bar.
+    paddingBottom: Spacing.six + Spacing.five,
   },
   content: {
     width: '100%',

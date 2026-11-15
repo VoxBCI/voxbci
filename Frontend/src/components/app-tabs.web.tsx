@@ -8,13 +8,28 @@ import {
   Text,
   type PressableProps,
   type TextStyle,
+  type ViewStyle,
   View,
 } from 'react-native';
 
-import { Spacing } from '@/constants/theme';
-import { useTheme } from '@/hooks/use-theme';
+import { Radius, Spacing } from '@/constants/theme';
 
 const ICON_SIZE = 26;
+const BAR_INSET = 20;
+const BAR_MAX_WIDTH = 380;
+
+/**
+ * Floating "liquid glass" bar: a dark translucent pill with a backdrop blur,
+ * a hairline rim and an inner top highlight. Those three properties are plain
+ * CSS that react-native-web forwards, so the casts below are web-only.
+ */
+const GLASS = {
+  backgroundColor: 'rgba(10, 22, 38, 0.66)',
+  borderColor: 'rgba(255, 255, 255, 0.18)',
+  backdropFilter: 'blur(22px) saturate(180%)',
+  boxShadow:
+    '0 18px 40px rgba(3, 12, 24, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.28)',
+} as ViewStyle;
 
 /**
  * Google Material Symbols glyph names. `person_pin_circle` only exists in the
@@ -83,15 +98,18 @@ const TabIcon = forwardRef<ComponentRef<typeof View>, TabIconProps>(function Tab
   { icon, avatar = false, label, ready = true, isFocused, style, ...rest },
   ref,
 ) {
-  const theme = useTheme();
-
   return (
     <Pressable
       ref={ref}
+      aria-selected={isFocused}
       accessibilityLabel={label}
       accessibilityRole="tab"
       accessibilityState={{ selected: isFocused }}
-      style={(state) => [styles.tab, typeof style === 'function' ? style(state) : style]}
+      style={(state) => [
+        styles.tab,
+        isFocused && styles.tabFocused,
+        typeof style === 'function' ? style(state) : style,
+      ]}
       {...rest}>
       {avatar ? (
         <Image
@@ -108,7 +126,7 @@ const TabIcon = forwardRef<ComponentRef<typeof View>, TabIconProps>(function Tab
           importantForAccessibility="no-hide-descendants"
           style={[
             styles.glyph,
-            { color: isFocused ? theme.accent : theme.textSecondary, opacity: ready ? 1 : 0 },
+            { color: isFocused ? '#FFFFFF' : 'rgba(255, 255, 255, 0.62)', opacity: ready ? 1 : 0 },
           ]}>
           {icon}
         </Text>
@@ -118,17 +136,12 @@ const TabIcon = forwardRef<ComponentRef<typeof View>, TabIconProps>(function Tab
 });
 
 export default function AppTabs() {
-  const theme = useTheme();
   const fontReady = useSymbolFont();
 
   return (
     <Tabs>
       <TabSlot style={styles.slot} />
-      <TabList
-        style={[
-          styles.tabList,
-          { backgroundColor: theme.background, borderTopColor: theme.border },
-        ]}>
+      <TabList style={[styles.tabList, GLASS]}>
         <TabTrigger name="telemetry" href="/telemetry" asChild>
           <TabIcon icon="dashboard" label="Telemetry" ready={fontReady} />
         </TabTrigger>
@@ -157,17 +170,33 @@ const styles = StyleSheet.create({
     minHeight: 0,
   },
   tabList: {
+    position: 'absolute',
+    bottom: BAR_INSET,
+    left: Spacing.four,
+    right: Spacing.four,
+    marginHorizontal: 'auto',
+    maxWidth: BAR_MAX_WIDTH,
     flexDirection: 'row',
-    justifyContent: 'space-around',
-    paddingVertical: Spacing.three,
-    borderTopWidth: StyleSheet.hairlineWidth,
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingHorizontal: Spacing.two,
+    paddingVertical: Spacing.one,
+    borderWidth: StyleSheet.hairlineWidth,
+    borderRadius: Radius.pill,
+    // Keeps the inner highlight and the glass surface inside the pill.
+    overflow: 'hidden',
   },
   tab: {
     alignItems: 'center',
     justifyContent: 'center',
-    paddingHorizontal: Spacing.four,
-    paddingVertical: Spacing.two,
+    width: 56,
+    height: 44,
+    borderRadius: Radius.pill,
   },
+  tabFocused: {
+    backgroundColor: 'rgba(255, 255, 255, 0.16)',
+    boxShadow: 'inset 0 1px 0 rgba(255, 255, 255, 0.28)',
+  } as ViewStyle,
   glyph: {
     fontFamily: FONT_FAMILY,
     fontSize: ICON_SIZE,

@@ -41,6 +41,8 @@ const styles = StyleSheet.create({
     maxWidth: MaxContentWidth,
     alignSelf: 'center',
     padding: Spacing.four,
+    // Clears the floating tab bar.
+    paddingBottom: Spacing.six + Spacing.five,
     gap: Spacing.three,
   },
   row: {

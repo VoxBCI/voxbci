@@ -65,16 +65,6 @@ export default function TelemetryScreen() {
               ))}
             </View>
           </ThemedView>
-
-          <View style={[styles.note, { borderColor: theme.border }]}>
-            <ThemedText type="smallBold">About this data</ThemedText>
-            <ThemedText type="small" themeColor="textSecondary">
-              These streams are synthetic TGAM-inspired signals rendered on-device for
-              demonstration. A standard TGAM module reports a single raw EEG channel, so the
-              five channels above are simulated — not live hardware telemetry or a device
-              recording.
-            </ThemedText>
-          </View>
         </View>
       </ScrollView>
     </ThemedView>
@@ -155,11 +145,5 @@ const styles = StyleSheet.create({
     flexShrink: 1,
     textAlign: 'right',
     fontWeight: '700',
-  },
-  note: {
-    borderRadius: Radius.md,
-    borderWidth: StyleSheet.hairlineWidth,
-    padding: Spacing.three,
-    gap: Spacing.one,
   },
 });

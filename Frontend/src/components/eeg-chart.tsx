@@ -197,11 +197,6 @@ export function EegChart() {
             {EEG_WINDOW_SECONDS} s rolling window · {EEG_SAMPLE_RATE} Hz
           </Text>
         </View>
-
-        <View style={styles.status}>
-          <View style={styles.statusDot} />
-          <Text style={styles.statusText}>Simulated</Text>
-        </View>
       </View>
 
       <View style={styles.legend}>
@@ -314,28 +309,6 @@ const styles = StyleSheet.create({
     color: CARD_MUTED,
     fontSize: 12,
     fontFamily: MONO,
-  },
-  status: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 6,
-    paddingHorizontal: Spacing.two,
-    paddingVertical: Spacing.one,
-    borderRadius: Radius.pill,
-    backgroundColor: 'rgba(52, 211, 153, 0.12)',
-    borderWidth: StyleSheet.hairlineWidth,
-    borderColor: 'rgba(52, 211, 153, 0.4)',
-  },
-  statusDot: {
-    width: 6,
-    height: 6,
-    borderRadius: 3,
-    backgroundColor: '#34D399',
-  },
-  statusText: {
-    color: '#6EE7B7',
-    fontSize: 11,
-    fontWeight: '600',
   },
   legend: {
     flexDirection: 'row',

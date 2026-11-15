@@ -107,7 +107,7 @@ export default function AppTabs() {
 
   return (
     <Tabs>
-      <TabSlot />
+      <TabSlot style={styles.slot} />
       <TabList
         style={[
           styles.tabList,
@@ -134,6 +134,12 @@ export default function AppTabs() {
 }
 
 const styles = StyleSheet.create({
+  slot: {
+    // `TabSlot` defaults to `flexShrink: 0`, so a tall screen (like the
+    // telemetry dashboard) pushes the tab bar past the bottom of the viewport.
+    flexShrink: 1,
+    minHeight: 0,
+  },
   tabList: {
     flexDirection: 'row',
     justifyContent: 'space-around',

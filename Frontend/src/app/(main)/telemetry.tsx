@@ -23,13 +23,6 @@ export default function TelemetryScreen() {
         contentContainerStyle={styles.scrollContent}
         showsVerticalScrollIndicator={false}>
         <View style={styles.content}>
-          <View style={styles.header}>
-            <ThemedText type="subtitle">Telemetry</ThemedText>
-            <ThemedText type="small" themeColor="textSecondary">
-              Five-channel EEG stream from your latest session.
-            </ThemedText>
-          </View>
-
           <EegChart />
 
           <ThemedView type="secondary" style={styles.sessionCard}>
@@ -84,9 +77,6 @@ const styles = StyleSheet.create({
     maxWidth: MaxContentWidth,
     alignSelf: 'center',
     gap: Spacing.three,
-  },
-  header: {
-    gap: Spacing.one,
   },
   sessionCard: {
     borderRadius: Radius.lg,

@@ -8,8 +8,6 @@ export default function SettingsScreen() {
   return (
     <ThemedView style={styles.screen}>
       <View style={styles.content}>
-        <ThemedText type="subtitle">Settings</ThemedText>
-
         <ThemedView type="secondary" style={styles.card}>
           <ThemedText type="smallBold">Appearance</ThemedText>
           <ThemedText type="small" themeColor="textSecondary">

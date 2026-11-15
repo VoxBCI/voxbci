@@ -35,8 +35,6 @@ export default function CommunityScreen() {
 
       <View pointerEvents="box-none" style={styles.overlay}>
         <View pointerEvents="box-none" style={styles.overlayContent}>
-          <ThemedText type="subtitle">Community</ThemedText>
-
           <TextInput
             accessibilityLabel="Search people to chat with"
             autoCapitalize="none"

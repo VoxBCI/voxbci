@@ -13,8 +13,6 @@ export default function ChatsScreen() {
   return (
     <ThemedView style={styles.screen}>
       <View style={styles.content}>
-        <ThemedText type="subtitle">Chats</ThemedText>
-
         {DUMMY_CHATS.map((chat) => (
           <ThemedView key={chat.id} type="secondary" style={styles.row}>
             <ThemedText type="smallBold">{chat.title}</ThemedText>

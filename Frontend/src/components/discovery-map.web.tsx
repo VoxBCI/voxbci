@@ -50,10 +50,19 @@ export default function DiscoveryMap({ people, query, onChat, style }: Discovery
 
   useEffect(() => {
     if (!ready) return;
-    frameRef.current?.contentWindow?.postMessage(
-      { __voxbciMap: true, type: 'theme', scheme },
-      '*',
+    const frame = frameRef.current?.contentWindow;
+    if (!frame) return;
+
+    const message = { __voxbciMap: true, type: 'theme', scheme };
+    frame.postMessage(message, '*');
+
+    // The iframe can attach its message listener a moment after `load`, so
+    // repeat the initial theme push instead of losing it to that race.
+    const timers = [150, 600].map((delay) =>
+      setTimeout(() => frame.postMessage(message, '*'), delay),
     );
+
+    return () => timers.forEach(clearTimeout);
   }, [ready, scheme]);
 
   useEffect(() => {

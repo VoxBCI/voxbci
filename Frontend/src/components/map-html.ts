@@ -80,6 +80,8 @@ export function buildMapHtml({ people, scheme }: BuildMapHtmlOptions): string {
     --accent: #007bff;
     --border: rgba(0, 0, 0, 0.10);
     --ring: #ffffff;
+    --pin-bg: #000000;
+    --pin-text: #ffffff;
     --attrib: rgba(255, 255, 255, 0.86);
     --shadow: 0 8px 20px rgba(0, 0, 0, 0.16);
   }
@@ -92,6 +94,8 @@ export function buildMapHtml({ people, scheme }: BuildMapHtmlOptions): string {
     --accent: #007bff;
     --border: rgba(255, 255, 255, 0.18);
     --ring: #00254c;
+    --pin-bg: #ffffff;
+    --pin-text: #000000;
     --attrib: rgba(0, 37, 76, 0.86);
     --shadow: 0 10px 24px rgba(0, 0, 0, 0.5);
   }
@@ -124,8 +128,8 @@ export function buildMapHtml({ people, scheme }: BuildMapHtmlOptions): string {
     width: 36px;
     height: 36px;
     border-radius: 50%;
-    background: var(--accent);
-    color: #ffffff;
+    background: var(--pin-bg);
+    color: var(--pin-text);
     border: 2px solid var(--ring);
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.35);
     font-size: 12px;

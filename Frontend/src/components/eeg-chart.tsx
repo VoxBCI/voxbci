@@ -11,7 +11,6 @@ import {
   EEG_WINDOW_SECONDS,
   type EegTrace,
 } from '@/data/eeg';
-import { useThemeScheme } from '@/hooks/use-theme';
 
 const ROW_HEIGHT = 56;
 const TOP_PADDING = 10;
@@ -20,28 +19,19 @@ const GUTTER = 54;
 const RIGHT_PADDING = 12;
 
 /**
- * The plot keeps a dark console look in dark mode, and flips to a white sheet
- * with navy ink in light mode so it reads as part of the page instead of a
- * black slab pasted onto it.
+ * The plot is always a dark console card: the primary dark-mode background
+ * (`#00254C`) with on-dark ink. On a light page it reads as a deliberate dark
+ * panel instead of a white card that disappears into the background.
  */
-const PALETTES = {
-  dark: {
-    background: '#05121F',
-    border: 'rgba(56, 189, 248, 0.18)',
-    grid: 'rgba(148, 163, 184, 0.13)',
-    midline: 'rgba(148, 163, 184, 0.07)',
-    muted: 'rgba(226, 232, 240, 0.55)',
-  },
-  light: {
-    background: '#FFFFFF',
-    border: 'rgba(0, 37, 76, 0.14)',
-    grid: 'rgba(0, 37, 76, 0.14)',
-    midline: 'rgba(0, 37, 76, 0.07)',
-    muted: 'rgba(0, 37, 76, 0.55)',
-  },
+const PALETTE = {
+  background: '#00254C',
+  border: 'rgba(56, 189, 248, 0.18)',
+  grid: 'rgba(148, 163, 184, 0.13)',
+  midline: 'rgba(148, 163, 184, 0.07)',
+  muted: 'rgba(226, 232, 240, 0.55)',
 } as const;
 
-type Palette = (typeof PALETTES)[keyof typeof PALETTES];
+type Palette = typeof PALETTE;
 
 const MONO = Fonts.mono;
 
@@ -166,8 +156,7 @@ function Trace({ trace, row, width }: { trace: EegTrace; row: number; width: num
 export function EegChart() {
   const pathname = usePathname();
   const active = pathname === '/telemetry';
-  const scheme = useThemeScheme();
-  const palette = PALETTES[scheme];
+  const palette = PALETTE;
   const { width: viewportWidth } = useWindowDimensions();
   const [elapsed, setElapsed] = useState(0);
   const [measuredWidth, setMeasuredWidth] = useState(0);

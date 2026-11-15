@@ -99,10 +99,7 @@ const TabIcon = forwardRef<ComponentRef<typeof View>, TabIconProps>(function Tab
           aria-hidden
           importantForAccessibility="no-hide-descendants"
           source={AVATAR}
-          style={[
-            styles.avatar,
-            { borderColor: isFocused ? theme.accent : theme.border },
-          ]}
+          style={styles.avatar}
         />
       ) : (
         <Text
@@ -183,6 +180,5 @@ const styles = StyleSheet.create({
     width: ICON_SIZE,
     height: ICON_SIZE,
     borderRadius: ICON_SIZE / 2,
-    borderWidth: 2,
   },
 });

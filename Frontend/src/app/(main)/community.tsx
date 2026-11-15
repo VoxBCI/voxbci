@@ -26,37 +26,41 @@ export default function CommunityScreen() {
 
   return (
     <ThemedView style={styles.screen}>
-      <View style={styles.content}>
-        <ThemedText type="subtitle">Community</ThemedText>
+      <DiscoveryMap
+        onChat={() => router.push('/chats')}
+        people={PEOPLE}
+        query={query}
+        style={styles.map}
+      />
 
-        <TextInput
-          accessibilityLabel="Search people to chat with"
-          autoCapitalize="none"
-          autoCorrect={false}
-          onChangeText={setQuery}
-          placeholder="Search people to chat with"
-          placeholderTextColor={theme.textSecondary}
-          returnKeyType="search"
-          value={query}
-          style={[
-            styles.input,
-            { backgroundColor: theme.secondary, color: theme.text, borderColor: theme.border },
-          ]}
-        />
+      <View pointerEvents="box-none" style={styles.overlay}>
+        <View pointerEvents="box-none" style={styles.overlayContent}>
+          <ThemedText type="subtitle">Community</ThemedText>
 
-        <ThemedText type="small" themeColor="textSecondary">
-          {needle
-            ? `${matches.length} of ${PEOPLE.length} people match “${query.trim()}”`
-            : `${PEOPLE.length} people you can chat with`}
-        </ThemedText>
-
-        <View style={[styles.mapCard, { borderColor: theme.border }]}>
-          <DiscoveryMap
-            onChat={() => router.push('/chats')}
-            people={PEOPLE}
-            query={query}
-            style={styles.map}
+          <TextInput
+            accessibilityLabel="Search people to chat with"
+            autoCapitalize="none"
+            autoCorrect={false}
+            onChangeText={setQuery}
+            placeholder="Search people to chat with"
+            placeholderTextColor={theme.textSecondary}
+            returnKeyType="search"
+            value={query}
+            style={[
+              styles.input,
+              {
+                backgroundColor: theme.secondary,
+                color: theme.text,
+                borderColor: theme.border,
+              },
+            ]}
           />
+
+          <ThemedText type="small" themeColor="textSecondary">
+            {needle
+              ? `${matches.length} of ${PEOPLE.length} people match “${query.trim()}”`
+              : `${PEOPLE.length} people you can chat with`}
+          </ThemedText>
         </View>
       </View>
     </ThemedView>
@@ -67,12 +71,21 @@ const styles = StyleSheet.create({
   screen: {
     flex: 1,
   },
-  content: {
+  map: {
     flex: 1,
+  },
+  overlay: {
+    position: 'absolute',
+    top: 0,
+    right: 0,
+    bottom: 0,
+    left: 0,
+    padding: Spacing.four,
+  },
+  overlayContent: {
     width: '100%',
     maxWidth: MaxContentWidth,
     alignSelf: 'center',
-    padding: Spacing.four,
     gap: Spacing.three,
   },
   input: {
@@ -81,15 +94,9 @@ const styles = StyleSheet.create({
     fontSize: 16,
     paddingHorizontal: Spacing.three,
     paddingVertical: Spacing.three,
-  },
-  mapCard: {
-    flex: 1,
-    minHeight: 260,
-    borderRadius: Radius.lg,
-    borderWidth: StyleSheet.hairlineWidth,
-    overflow: 'hidden',
-  },
-  map: {
-    flex: 1,
+    shadowColor: '#000000',
+    shadowOpacity: 0.18,
+    shadowRadius: 12,
+    shadowOffset: { width: 0, height: 4 },
   },
 });

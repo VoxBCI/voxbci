@@ -210,7 +210,7 @@ export function buildMapHtml({ people, scheme }: BuildMapHtmlOptions): string {
   #notice {
     position: absolute;
     left: 50%;
-    top: 14px;
+    bottom: 40px;
     transform: translateX(-50%);
     z-index: 800;
     max-width: 82%;
@@ -258,10 +258,12 @@ export function buildMapHtml({ people, scheme }: BuildMapHtmlOptions): string {
   var map = L.map('map', {
     center: peopleBounds.isValid() ? peopleBounds.getCenter() : [51.5074, -0.1278],
     zoom: 12,
-    zoomControl: true,
+    zoomControl: false,
     zoomSnap: 0.5,
     worldCopyJump: true
   });
+
+  L.control.zoom({ position: 'bottomleft' }).addTo(map);
 
   map.attributionControl.setPrefix(false);
   map.attributionControl.addAttribution(ATTRIBUTION);
@@ -451,6 +453,17 @@ export function buildMapHtml({ people, scheme }: BuildMapHtmlOptions): string {
   setTimeout(function () {
     map.invalidateSize();
   }, 250);
+
+  // On web the map is hosted in an iframe that may be attached at 0×0 and
+  // resized afterwards, so follow the container instead of relying on one
+  // delayed measurement.
+  if (typeof ResizeObserver !== 'undefined') {
+    var mapElement = document.getElementById('map');
+    new ResizeObserver(function () {
+      map.invalidateSize();
+    }).observe(mapElement);
+  }
+
   window.addEventListener('resize', function () {
     map.invalidateSize();
   });

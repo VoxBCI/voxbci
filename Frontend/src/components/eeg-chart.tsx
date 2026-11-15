@@ -1,9 +1,9 @@
 import { usePathname } from 'expo-router';
 import { useEffect, useMemo, useState } from 'react';
-import { StyleSheet, Text, View, type LayoutChangeEvent } from 'react-native';
+import { StyleSheet, Text, View, useWindowDimensions, type LayoutChangeEvent } from 'react-native';
 import Svg, { Circle, G, Line, Path, Text as SvgText } from 'react-native-svg';
 
-import { Fonts, Radius, Spacing } from '@/constants/theme';
+import { Fonts, MaxContentWidth, Radius, Spacing } from '@/constants/theme';
 import {
   buildEegFrame,
   EEG_CHANNELS,
@@ -147,8 +147,9 @@ function Trace({ trace, row, width }: { trace: EegTrace; row: number; width: num
 export function EegChart() {
   const pathname = usePathname();
   const active = pathname === '/telemetry';
+  const { width: viewportWidth } = useWindowDimensions();
   const [elapsed, setElapsed] = useState(0);
-  const [width, setWidth] = useState(0);
+  const [measuredWidth, setMeasuredWidth] = useState(0);
 
   useEffect(() => {
     if (!active) return;
@@ -161,11 +162,27 @@ export function EegChart() {
   }, [active]);
 
   const frame = useMemo(() => buildEegFrame(elapsed), [elapsed]);
-  const plotWidth = Math.max(0, width - GUTTER - RIGHT_PADDING);
+
+  // `onLayout` is unreliable during web hydration, so derive a width from the
+  // viewport (same padding/max-width as the screen) and let the measured value
+  // refine it once the plot actually lays out.
+  const estimatedCardWidth = Math.min(
+    Math.max(viewportWidth > 0 ? viewportWidth - Spacing.four * 2 : MaxContentWidth, 240),
+    MaxContentWidth,
+  );
+  const estimatedPlotWidth = Math.max(
+    140,
+    estimatedCardWidth - Spacing.three * 2 - GUTTER - RIGHT_PADDING,
+  );
+  const plotWidth =
+    measuredWidth > 0
+      ? Math.max(140, measuredWidth - GUTTER - RIGHT_PADDING)
+      : estimatedPlotWidth;
+  const svgWidth = plotWidth + GUTTER + RIGHT_PADDING;
 
   const onLayout = (event: LayoutChangeEvent) => {
     const next = event.nativeEvent.layout.width;
-    setWidth((current) => (Math.abs(current - next) < 0.5 ? current : next));
+    setMeasuredWidth((current) => (Math.abs(current - next) < 0.5 ? current : next));
   };
 
   return (
@@ -197,69 +214,67 @@ export function EegChart() {
       </View>
 
       <View onLayout={onLayout} style={styles.plotArea}>
-        {plotWidth > 0 ? (
-          <Svg width="100%" height={SVG_HEIGHT} viewBox={`0 0 ${width} ${SVG_HEIGHT}`}>
-            {EEG_CHANNELS.map((channel, row) => {
-              const top = TOP_PADDING + row * ROW_HEIGHT;
-              return (
-                <G key={`row-${channel.id}`}>
-                  <Line
-                    x1={GUTTER}
-                    x2={width - RIGHT_PADDING}
-                    y1={top}
-                    y2={top}
-                    stroke={GRID_COLOR}
-                    strokeWidth={1}
-                  />
-                  <Line
-                    x1={GUTTER}
-                    x2={width - RIGHT_PADDING}
-                    y1={top + ROW_HEIGHT / 2}
-                    y2={top + ROW_HEIGHT / 2}
-                    stroke={GRID_MIDLINE}
-                    strokeWidth={1}
-                    strokeDasharray={[2, 6]}
-                  />
-                  <SvgText
-                    x={0}
-                    y={top + ROW_HEIGHT / 2 - 4}
-                    fill={channel.color}
-                    fontFamily={MONO}
-                    fontSize={10}
-                    fontWeight="700"
-                    textAnchor="start">
-                    {channel.id}
-                  </SvgText>
-                  <SvgText
-                    x={0}
-                    y={top + ROW_HEIGHT / 2 + 11}
-                    fill={CARD_MUTED}
-                    fontFamily={MONO}
-                    fontSize={8.5}
-                    textAnchor="start">
-                    {`±${channel.range} µV`}
-                  </SvgText>
-                </G>
-              );
-            })}
+        <Svg width="100%" height={SVG_HEIGHT} viewBox={`0 0 ${svgWidth} ${SVG_HEIGHT}`}>
+          {EEG_CHANNELS.map((channel, row) => {
+            const top = TOP_PADDING + row * ROW_HEIGHT;
+            return (
+              <G key={`row-${channel.id}`}>
+                <Line
+                  x1={GUTTER}
+                  x2={svgWidth - RIGHT_PADDING}
+                  y1={top}
+                  y2={top}
+                  stroke={GRID_COLOR}
+                  strokeWidth={1}
+                />
+                <Line
+                  x1={GUTTER}
+                  x2={svgWidth - RIGHT_PADDING}
+                  y1={top + ROW_HEIGHT / 2}
+                  y2={top + ROW_HEIGHT / 2}
+                  stroke={GRID_MIDLINE}
+                  strokeWidth={1}
+                  strokeDasharray={[2, 6]}
+                />
+                <SvgText
+                  x={0}
+                  y={top + ROW_HEIGHT / 2 - 4}
+                  fill={channel.color}
+                  fontFamily={MONO}
+                  fontSize={10}
+                  fontWeight="700"
+                  textAnchor="start">
+                  {channel.id}
+                </SvgText>
+                <SvgText
+                  x={0}
+                  y={top + ROW_HEIGHT / 2 + 11}
+                  fill={CARD_MUTED}
+                  fontFamily={MONO}
+                  fontSize={8.5}
+                  textAnchor="start">
+                  {`±${channel.range} µV`}
+                </SvgText>
+              </G>
+            );
+          })}
 
-            <Line
-              x1={GUTTER}
-              x2={width - RIGHT_PADDING}
-              y1={TOP_PADDING + PLOT_HEIGHT}
-              y2={TOP_PADDING + PLOT_HEIGHT}
-              stroke={GRID_COLOR}
-              strokeWidth={1}
-            />
+          <Line
+            x1={GUTTER}
+            x2={svgWidth - RIGHT_PADDING}
+            y1={TOP_PADDING + PLOT_HEIGHT}
+            y2={TOP_PADDING + PLOT_HEIGHT}
+            stroke={GRID_COLOR}
+            strokeWidth={1}
+          />
 
-            <G transform={`translate(${GUTTER}, 0)`}>
-              {frame.map((trace, row) => (
-                <Trace key={trace.channel.id} trace={trace} row={row} width={plotWidth} />
-              ))}
-              <TimeAxis width={plotWidth} />
-            </G>
-          </Svg>
-        ) : null}
+          <G transform={`translate(${GUTTER}, 0)`}>
+            {frame.map((trace, row) => (
+              <Trace key={trace.channel.id} trace={trace} row={row} width={plotWidth} />
+            ))}
+            <TimeAxis width={plotWidth} />
+          </G>
+        </Svg>
       </View>
 
       <View style={styles.footer}>

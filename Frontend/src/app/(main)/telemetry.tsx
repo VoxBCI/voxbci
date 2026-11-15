@@ -4,7 +4,7 @@ import { EegChart } from '@/components/eeg-chart';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import { MaxContentWidth, Radius, Spacing } from '@/constants/theme';
-import { useTheme } from '@/hooks/use-theme';
+import { useTheme, useThemeScheme } from '@/hooks/use-theme';
 
 const SESSION_FIELDS = [
   { label: 'Timestamp', value: '2 minutes ago' },
@@ -14,6 +14,8 @@ const SESSION_FIELDS = [
 
 export default function TelemetryScreen() {
   const theme = useTheme();
+  const scheme = useThemeScheme();
+  const dark = scheme === 'dark';
 
   return (
     <ThemedView style={styles.screen}>
@@ -33,9 +35,15 @@ export default function TelemetryScreen() {
           <ThemedView type="secondary" style={styles.sessionCard}>
             <View style={styles.sessionHeader}>
               <ThemedText style={styles.sessionTitle}>Latest session</ThemedText>
-              <View style={styles.status}>
+              <View
+                style={[
+                  styles.status,
+                  dark ? styles.statusDark : null,
+                ]}>
                 <View style={styles.statusDot} />
-                <ThemedText style={styles.statusText}>Simulated data</ThemedText>
+                <ThemedText style={[styles.statusText, dark ? styles.statusTextDark : null]}>
+                  Simulated data
+                </ThemedText>
               </View>
             </View>
 
@@ -118,6 +126,10 @@ const styles = StyleSheet.create({
     borderWidth: StyleSheet.hairlineWidth,
     borderColor: 'rgba(52, 211, 153, 0.5)',
   },
+  statusDark: {
+    backgroundColor: 'rgba(4, 120, 87, 0.32)',
+    borderColor: 'rgba(167, 243, 208, 0.6)',
+  },
   statusDot: {
     width: 6,
     height: 6,
@@ -128,6 +140,9 @@ const styles = StyleSheet.create({
     color: '#047857',
     fontSize: 11,
     fontWeight: '700',
+  },
+  statusTextDark: {
+    color: '#A7F3D0',
   },
   sessionRow: {
     flexDirection: 'row',

@@ -182,7 +182,7 @@ const styles = StyleSheet.create({
   avatar: {
     width: ICON_SIZE,
     height: ICON_SIZE,
-    borderRadius: 6,
+    borderRadius: ICON_SIZE / 2,
     borderWidth: 2,
   },
 });

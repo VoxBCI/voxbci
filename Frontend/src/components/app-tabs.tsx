@@ -26,7 +26,9 @@ export default function AppTabs() {
       </NativeTabs.Trigger>
 
       <NativeTabs.Trigger name="settings">
-        <NativeTabs.Trigger.Icon sf="face.smiling" md="face_4" />
+        <NativeTabs.Trigger.Icon
+          src={require('../../assets/images/avatar-identicon.png')}
+        />
         <NativeTabs.Trigger.Label hidden>Settings</NativeTabs.Trigger.Label>
       </NativeTabs.Trigger>
     </NativeTabs>

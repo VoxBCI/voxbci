@@ -2,6 +2,7 @@ import { Asset } from 'expo-asset';
 import { TabList, TabSlot, TabTrigger, Tabs } from 'expo-router/ui';
 import { forwardRef, useEffect, useState, type ComponentRef } from 'react';
 import {
+  Image,
   Pressable,
   StyleSheet,
   Text,
@@ -16,13 +17,16 @@ import { useTheme } from '@/hooks/use-theme';
 const ICON_SIZE = 26;
 
 /**
- * Google Material Symbols glyph names. `person_pin_circle` and `face_4` only
- * exist in the newer Material Symbols set (https://fonts.google.com/icons) —
- * the Material Icons font bundled with `@expo/vector-icons` has no such glyphs.
+ * Google Material Symbols glyph names. `person_pin_circle` only exists in the
+ * newer Material Symbols set (https://fonts.google.com/icons) — the Material
+ * Icons font bundled with `@expo/vector-icons` has no such glyph.
  */
-type SymbolName = 'dashboard' | 'person_pin_circle' | 'mail' | 'face_4';
+type SymbolName = 'dashboard' | 'person_pin_circle' | 'mail';
 
-const SYMBOLS: SymbolName[] = ['dashboard', 'person_pin_circle', 'mail', 'face_4'];
+const SYMBOLS: SymbolName[] = ['dashboard', 'person_pin_circle', 'mail'];
+
+/** GitHub-style identicon standing in for the signed-in profile. */
+const AVATAR = require('../../assets/images/avatar-identicon.png');
 
 /**
  * Material Symbols draws each icon name as a ligature, so the string
@@ -64,7 +68,9 @@ function useSymbolFont() {
 
 type TabIconProps = Omit<PressableProps, 'children'> & {
   /** Material Symbols glyph name. */
-  icon: SymbolName;
+  icon?: SymbolName;
+  /** Renders the profile identicon instead of a glyph. */
+  avatar?: boolean;
   /** Accessible name — the tab bar itself is icon-only. */
   label: string;
   /** Hides the glyph until the icon font finishes loading (web only). */
@@ -74,7 +80,7 @@ type TabIconProps = Omit<PressableProps, 'children'> & {
 };
 
 const TabIcon = forwardRef<ComponentRef<typeof View>, TabIconProps>(function TabIcon(
-  { icon, label, ready = true, isFocused, style, ...rest },
+  { icon, avatar = false, label, ready = true, isFocused, style, ...rest },
   ref,
 ) {
   const theme = useTheme();
@@ -87,16 +93,29 @@ const TabIcon = forwardRef<ComponentRef<typeof View>, TabIconProps>(function Tab
       accessibilityState={{ selected: isFocused }}
       style={(state) => [styles.tab, typeof style === 'function' ? style(state) : style]}
       {...rest}>
-      <Text
-        accessibilityElementsHidden
-        aria-hidden
-        importantForAccessibility="no-hide-descendants"
-        style={[
-          styles.glyph,
-          { color: isFocused ? theme.accent : theme.textSecondary, opacity: ready ? 1 : 0 },
-        ]}>
-        {icon}
-      </Text>
+      {avatar ? (
+        <Image
+          accessibilityElementsHidden
+          aria-hidden
+          importantForAccessibility="no-hide-descendants"
+          source={AVATAR}
+          style={[
+            styles.avatar,
+            { borderColor: isFocused ? theme.accent : theme.border },
+          ]}
+        />
+      ) : (
+        <Text
+          accessibilityElementsHidden
+          aria-hidden
+          importantForAccessibility="no-hide-descendants"
+          style={[
+            styles.glyph,
+            { color: isFocused ? theme.accent : theme.textSecondary, opacity: ready ? 1 : 0 },
+          ]}>
+          {icon}
+        </Text>
+      )}
     </Pressable>
   );
 });
@@ -126,7 +145,7 @@ export default function AppTabs() {
         </TabTrigger>
 
         <TabTrigger name="settings" href="/settings" asChild>
-          <TabIcon icon="face_4" label="Settings" ready={fontReady} />
+          <TabIcon avatar label="Settings" />
         </TabTrigger>
       </TabList>
     </Tabs>
@@ -160,4 +179,10 @@ const styles = StyleSheet.create({
     // Not part of RN's TextStyle type, but react-native-web forwards it.
     fontFeatureSettings: "'liga' 1",
   } as TextStyle,
+  avatar: {
+    width: ICON_SIZE,
+    height: ICON_SIZE,
+    borderRadius: 6,
+    borderWidth: 2,
+  },
 });

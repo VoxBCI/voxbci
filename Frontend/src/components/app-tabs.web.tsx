@@ -105,11 +105,7 @@ const TabIcon = forwardRef<ComponentRef<typeof View>, TabIconProps>(function Tab
       accessibilityLabel={label}
       accessibilityRole="tab"
       accessibilityState={{ selected: isFocused }}
-      style={(state) => [
-        styles.tab,
-        isFocused && styles.tabFocused,
-        typeof style === 'function' ? style(state) : style,
-      ]}
+      style={(state) => [styles.tab, typeof style === 'function' ? style(state) : style]}
       {...rest}>
       {avatar ? (
         <Image
@@ -193,10 +189,6 @@ const styles = StyleSheet.create({
     height: 44,
     borderRadius: Radius.pill,
   },
-  tabFocused: {
-    backgroundColor: 'rgba(255, 255, 255, 0.16)',
-    boxShadow: 'inset 0 1px 0 rgba(255, 255, 255, 0.28)',
-  } as ViewStyle,
   glyph: {
     fontFamily: FONT_FAMILY,
     fontSize: ICON_SIZE,

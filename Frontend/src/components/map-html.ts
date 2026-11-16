@@ -88,7 +88,7 @@ export function buildMapHtml({ people, scheme }: BuildMapHtmlOptions): string {
   body[data-scheme='dark'] {
     color-scheme: dark;
     --bg: #00254c;
-    --surface: #007bff;
+    --surface: #0a3d78;
     --text: #ffffff;
     --muted: rgba(255, 255, 255, 0.72);
     --accent: #007bff;
@@ -189,18 +189,6 @@ export function buildMapHtml({ people, scheme }: BuildMapHtmlOptions): string {
   .chat:active {
     opacity: 0.85;
   }
-  .leaflet-control-zoom {
-    border: 1px solid var(--border);
-    border-radius: 10px;
-    overflow: hidden;
-    box-shadow: var(--shadow);
-  }
-  .leaflet-control-zoom a,
-  .leaflet-control-zoom a:hover {
-    background: var(--bg);
-    color: var(--text);
-    border-bottom-color: var(--border);
-  }
   .leaflet-control-attribution {
     background: var(--attrib) !important;
     color: var(--muted) !important;
@@ -266,8 +254,6 @@ export function buildMapHtml({ people, scheme }: BuildMapHtmlOptions): string {
     zoomSnap: 0.5,
     worldCopyJump: true
   });
-
-  L.control.zoom({ position: 'bottomleft' }).addTo(map);
 
   map.attributionControl.setPrefix(false);
   map.attributionControl.addAttribution(ATTRIBUTION);

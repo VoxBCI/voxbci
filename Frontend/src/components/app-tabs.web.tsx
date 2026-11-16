@@ -111,9 +111,11 @@ const TabIcon = forwardRef<ComponentRef<typeof View>, TabIconProps>(function Tab
       accessibilityRole="tab"
       accessibilityState={{ selected: isFocused }}
       style={(state) => [
+        typeof style === 'function' ? style(state) : style,
+        // `TabTrigger` injects its own row styles; ours go last so the icon is
+        // centred in its cell instead of being pinned to the left edge.
         styles.tab,
         { opacity: isFocused ? 1 : INACTIVE_OPACITY },
-        typeof style === 'function' ? style(state) : style,
       ]}
       {...rest}>
       {avatar ? (

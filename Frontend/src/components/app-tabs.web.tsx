@@ -23,13 +23,13 @@ const BAR_MAX_WIDTH = 340;
 const INACTIVE_OPACITY = 0.5;
 
 /**
- * Google Material Symbols glyph names. `person_pin_circle` only exists in the
- * newer Material Symbols set (https://fonts.google.com/icons) — the Material
- * Icons font bundled with `@expo/vector-icons` has no such glyph.
+ * Google Material Symbols glyph names. `web_stories` and `comic_bubble` only
+ * exist in the newer Material Symbols set (https://fonts.google.com/icons) —
+ * the Material Icons font bundled with `@expo/vector-icons` has no such glyphs.
  */
-type SymbolName = 'dashboard' | 'person_pin_circle' | 'mail';
+type SymbolName = 'dashboard' | 'web_stories' | 'comic_bubble';
 
-const SYMBOLS: SymbolName[] = ['dashboard', 'person_pin_circle', 'mail'];
+const SYMBOLS: SymbolName[] = ['dashboard', 'web_stories', 'comic_bubble'];
 
 /** GitHub-style identicon standing in for the signed-in profile. */
 const AVATAR = require('../../assets/images/avatar-identicon.png');
@@ -38,8 +38,8 @@ const AVATAR_MUTED = require('../../assets/images/avatar-identicon-muted.png');
 
 /**
  * Material Symbols draws each icon name as a ligature, so the string
- * "groups_2" renders as a single glyph. We bundle a ~2 KB subset holding just
- * the four tab icons instead of pulling the full font from a CDN.
+ * "web_stories" renders as a single glyph. We bundle a ~2 KB subset holding just
+ * the three glyph tabs instead of pulling the full font from a CDN.
  */
 const FONT_FAMILY = 'VoxMaterialSymbols';
 const FONT_STYLE_ID = 'vox-material-symbols';
@@ -142,11 +142,11 @@ export default function AppTabs() {
         </TabTrigger>
 
         <TabTrigger name="community" href="/community" asChild>
-          <TabIcon icon="person_pin_circle" label="Community" ready={fontReady} />
+          <TabIcon icon="web_stories" label="Community" ready={fontReady} />
         </TabTrigger>
 
         <TabTrigger name="chats" href="/chats" asChild>
-          <TabIcon icon="mail" label="Chats" ready={fontReady} />
+          <TabIcon icon="comic_bubble" label="Chats" ready={fontReady} />
         </TabTrigger>
 
         <TabTrigger name="settings" href="/settings" asChild>

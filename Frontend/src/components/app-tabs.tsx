@@ -16,12 +16,12 @@ export default function AppTabs() {
       </NativeTabs.Trigger>
 
       <NativeTabs.Trigger name="community">
-        <NativeTabs.Trigger.Icon sf="person.crop.circle" md="person_pin_circle" />
+        <NativeTabs.Trigger.Icon sf="rectangle.stack" md="web_stories" />
         <NativeTabs.Trigger.Label hidden>Community</NativeTabs.Trigger.Label>
       </NativeTabs.Trigger>
 
       <NativeTabs.Trigger name="chats">
-        <NativeTabs.Trigger.Icon sf="envelope" md="mail" />
+        <NativeTabs.Trigger.Icon sf="bubble.left.and.bubble.right" md="comic_bubble" />
         <NativeTabs.Trigger.Label hidden>Chats</NativeTabs.Trigger.Label>
       </NativeTabs.Trigger>
 

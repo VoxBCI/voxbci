@@ -13,7 +13,7 @@ import {
 } from 'react-native';
 
 import { Radius, Spacing } from '@/constants/theme';
-import { useTheme, useThemeScheme } from '@/hooks/use-theme';
+import { useTheme } from '@/hooks/use-theme';
 
 const ICON_SIZE = 26;
 const BAR_INSET = 20;
@@ -21,16 +21,6 @@ const BAR_MAX_WIDTH = 340;
 
 /** Inactive tabs are dimmed to half opacity; the active tab is solid. */
 const INACTIVE_OPACITY = 0.5;
-
-/**
- * Floating pill. The surface and the icon ink come from the active palette
- * (light: black icons on the pale secondary blue, dark: white on deep blue),
- * so the bar follows the device theme like the rest of the app.
- */
-const BAR_SHADOW = {
-  light: '0 12px 28px rgba(0, 37, 76, 0.16), inset 0 1px 0 rgba(255, 255, 255, 0.9)',
-  dark: '0 16px 32px rgba(0, 0, 0, 0.55), inset 0 1px 0 rgba(255, 255, 255, 0.12)',
-} as const;
 
 /**
  * Google Material Symbols glyph names. `person_pin_circle` only exists in the
@@ -142,20 +132,11 @@ const TabIcon = forwardRef<ComponentRef<typeof View>, TabIconProps>(function Tab
 export default function AppTabs() {
   const fontReady = useSymbolFont();
   const theme = useTheme();
-  const scheme = useThemeScheme();
 
   return (
     <Tabs>
       <TabSlot style={styles.slot} />
-      <TabList
-        style={[
-          styles.tabList,
-          {
-            backgroundColor: theme.secondary,
-            borderColor: theme.border,
-            boxShadow: BAR_SHADOW[scheme],
-          } as ViewStyle,
-        ]}>
+      <TabList style={[styles.tabList, { backgroundColor: theme.secondary } as ViewStyle]}>
         <TabTrigger name="telemetry" href="/telemetry" asChild>
           <TabIcon icon="dashboard" label="Telemetry" ready={fontReady} />
         </TabTrigger>
@@ -196,10 +177,9 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     paddingVertical: Spacing.one,
-    borderWidth: StyleSheet.hairlineWidth,
+    // Flat by design: no border and no shadow, only the solid fill applied
+    // inline from the active palette.
     borderRadius: Radius.pill,
-    // Keeps the inner highlight and the glass surface inside the pill.
-    overflow: 'hidden',
   },
   tab: {
     alignItems: 'center',

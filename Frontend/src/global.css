@@ -8,7 +8,7 @@
  * browser switches themes with zero JS.
  *
  *   light → white page, black text, pale blue secondary
- *   dark  → navy page, white text, vivid blue secondary
+ *   dark  → black page, white text, navy accent
  */
 
 :root {
@@ -39,12 +39,12 @@
   :root {
     color-scheme: dark;
 
-    --color-background: #00254c;
+    --color-background: #000000;
     --color-secondary: #0a3d78;
     --color-text: #ffffff;
     --color-text-secondary: rgba(255, 255, 255, 0.72);
     --color-border: rgba(255, 255, 255, 0.18);
-    --color-accent: #007bff;
+    --color-accent: #00254c;
   }
 }
 

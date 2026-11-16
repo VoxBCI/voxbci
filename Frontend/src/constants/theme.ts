@@ -14,7 +14,7 @@
  * switches on `prefers-color-scheme`. Keep the two in sync.
  *
  *   light → white page, black text, pale blue secondary (#F0F5FF)
- *   dark  → navy page, white text, deep blue secondary (#0A3D78)
+ *   dark  → black page, white text, deep blue secondary (#0A3D78)
  */
 
 import '@/global.css';
@@ -37,12 +37,12 @@ export const Colors = {
     accent: '#007BFF',
   },
   dark: {
-    background: '#00254C',
+    background: '#000000',
     secondary: '#0A3D78',
     text: '#FFFFFF',
     textSecondary: 'rgba(255, 255, 255, 0.72)',
     border: 'rgba(255, 255, 255, 0.18)',
-    accent: '#007BFF',
+    accent: '#00254C',
   },
 } as const;
 

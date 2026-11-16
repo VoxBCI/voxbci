@@ -87,16 +87,16 @@ export function buildMapHtml({ people, scheme }: BuildMapHtmlOptions): string {
   }
   body[data-scheme='dark'] {
     color-scheme: dark;
-    --bg: #00254c;
+    --bg: #000000;
     --surface: #0a3d78;
     --text: #ffffff;
     --muted: rgba(255, 255, 255, 0.72);
-    --accent: #007bff;
+    --accent: #00254c;
     --border: rgba(255, 255, 255, 0.18);
     --ring: #00254c;
     --pin-bg: #ffffff;
     --pin-text: #000000;
-    --attrib: rgba(0, 37, 76, 0.86);
+    --attrib: rgba(0, 0, 0, 0.86);
     --shadow: 0 10px 24px rgba(0, 0, 0, 0.5);
   }
   html, body {

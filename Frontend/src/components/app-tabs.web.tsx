@@ -13,23 +13,24 @@ import {
 } from 'react-native';
 
 import { Radius, Spacing } from '@/constants/theme';
+import { useTheme, useThemeScheme } from '@/hooks/use-theme';
 
 const ICON_SIZE = 26;
 const BAR_INSET = 20;
-const BAR_MAX_WIDTH = 380;
+const BAR_MAX_WIDTH = 340;
+
+/** Inactive tabs are dimmed to half opacity; the active tab is solid. */
+const INACTIVE_OPACITY = 0.5;
 
 /**
- * Floating "liquid glass" bar: a dark translucent pill with a backdrop blur,
- * a hairline rim and an inner top highlight. Those three properties are plain
- * CSS that react-native-web forwards, so the casts below are web-only.
+ * Floating pill. The surface and the icon ink come from the active palette
+ * (light: black icons on the pale secondary blue, dark: white on deep blue),
+ * so the bar follows the device theme like the rest of the app.
  */
-const GLASS = {
-  backgroundColor: 'rgba(10, 22, 38, 0.66)',
-  borderColor: 'rgba(255, 255, 255, 0.18)',
-  backdropFilter: 'blur(22px) saturate(180%)',
-  boxShadow:
-    '0 18px 40px rgba(3, 12, 24, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.28)',
-} as ViewStyle;
+const BAR_SHADOW = {
+  light: '0 12px 28px rgba(0, 37, 76, 0.16), inset 0 1px 0 rgba(255, 255, 255, 0.9)',
+  dark: '0 16px 32px rgba(0, 0, 0, 0.55), inset 0 1px 0 rgba(255, 255, 255, 0.12)',
+} as const;
 
 /**
  * Google Material Symbols glyph names. `person_pin_circle` only exists in the
@@ -42,6 +43,8 @@ const SYMBOLS: SymbolName[] = ['dashboard', 'person_pin_circle', 'mail'];
 
 /** GitHub-style identicon standing in for the signed-in profile. */
 const AVATAR = require('../../assets/images/avatar-identicon.png');
+/** Desaturated copy, used while the tab is inactive. */
+const AVATAR_MUTED = require('../../assets/images/avatar-identicon-muted.png');
 
 /**
  * Material Symbols draws each icon name as a ligature, so the string
@@ -98,6 +101,8 @@ const TabIcon = forwardRef<ComponentRef<typeof View>, TabIconProps>(function Tab
   { icon, avatar = false, label, ready = true, isFocused, style, ...rest },
   ref,
 ) {
+  const theme = useTheme();
+
   return (
     <Pressable
       ref={ref}
@@ -105,14 +110,18 @@ const TabIcon = forwardRef<ComponentRef<typeof View>, TabIconProps>(function Tab
       accessibilityLabel={label}
       accessibilityRole="tab"
       accessibilityState={{ selected: isFocused }}
-      style={(state) => [styles.tab, typeof style === 'function' ? style(state) : style]}
+      style={(state) => [
+        styles.tab,
+        { opacity: isFocused ? 1 : INACTIVE_OPACITY },
+        typeof style === 'function' ? style(state) : style,
+      ]}
       {...rest}>
       {avatar ? (
         <Image
           accessibilityElementsHidden
           aria-hidden
           importantForAccessibility="no-hide-descendants"
-          source={AVATAR}
+          source={isFocused ? AVATAR : AVATAR_MUTED}
           style={styles.avatar}
         />
       ) : (
@@ -120,10 +129,7 @@ const TabIcon = forwardRef<ComponentRef<typeof View>, TabIconProps>(function Tab
           accessibilityElementsHidden
           aria-hidden
           importantForAccessibility="no-hide-descendants"
-          style={[
-            styles.glyph,
-            { color: isFocused ? '#FFFFFF' : 'rgba(255, 255, 255, 0.62)', opacity: ready ? 1 : 0 },
-          ]}>
+          style={[styles.glyph, { color: theme.text, opacity: ready ? 1 : 0 }]}>
           {icon}
         </Text>
       )}
@@ -133,11 +139,21 @@ const TabIcon = forwardRef<ComponentRef<typeof View>, TabIconProps>(function Tab
 
 export default function AppTabs() {
   const fontReady = useSymbolFont();
+  const theme = useTheme();
+  const scheme = useThemeScheme();
 
   return (
     <Tabs>
       <TabSlot style={styles.slot} />
-      <TabList style={[styles.tabList, GLASS]}>
+      <TabList
+        style={[
+          styles.tabList,
+          {
+            backgroundColor: theme.secondary,
+            borderColor: theme.border,
+            boxShadow: BAR_SHADOW[scheme],
+          } as ViewStyle,
+        ]}>
         <TabTrigger name="telemetry" href="/telemetry" asChild>
           <TabIcon icon="dashboard" label="Telemetry" ready={fontReady} />
         </TabTrigger>
@@ -168,14 +184,15 @@ const styles = StyleSheet.create({
   tabList: {
     position: 'absolute',
     bottom: BAR_INSET,
-    left: Spacing.four,
-    right: Spacing.four,
-    marginHorizontal: 'auto',
+    // `left: 0` + `right: 0` + auto margins centre the pill, so the gutter on
+    // each side is identical at every viewport width.
+    left: 0,
+    right: 0,
+    width: '88%',
     maxWidth: BAR_MAX_WIDTH,
+    marginHorizontal: 'auto',
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'space-between',
-    paddingHorizontal: Spacing.two,
     paddingVertical: Spacing.one,
     borderWidth: StyleSheet.hairlineWidth,
     borderRadius: Radius.pill,
@@ -185,8 +202,9 @@ const styles = StyleSheet.create({
   tab: {
     alignItems: 'center',
     justifyContent: 'center',
-    width: 56,
-    height: 44,
+    // Equal share of the bar per tab = evenly spaced icons, edge to edge.
+    flex: 1,
+    height: 52,
     borderRadius: Radius.pill,
   },
   glyph: {

@@ -21,13 +21,12 @@ const RIGHT_PADDING = 12;
 
 /**
  * The card follows the device theme, but never sits on the page background:
- * light mode uses the pale-blue surface (`Colors.light.secondary`) with navy
- * ink, dark mode uses the primary navy (`Colors.dark.background`) with on-dark
- * ink. Both keep the same console layout.
+ * both palettes use the raised-surface colour (`Colors[scheme].secondary`) with
+ * ink tuned for it, so the chart stays distinct from the page either way.
  */
 const PALETTES = {
   light: {
-    background: '#F0F5FF',
+    background: '#D9E1F8',
     border: 'rgba(0, 37, 76, 0.14)',
     grid: 'rgba(0, 37, 76, 0.14)',
     midline: 'rgba(0, 37, 76, 0.07)',
@@ -42,7 +41,7 @@ const PALETTES = {
     } as Record<string, string>,
   },
   dark: {
-    background: '#00254C',
+    background: '#262626',
     border: 'rgba(56, 189, 248, 0.18)',
     grid: 'rgba(148, 163, 184, 0.13)',
     midline: 'rgba(148, 163, 184, 0.07)',

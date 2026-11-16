@@ -13,8 +13,8 @@
  * Web mirror: src/global.css exposes the same values as CSS variables and
  * switches on `prefers-color-scheme`. Keep the two in sync.
  *
- *   light → white page, black text, pale blue secondary (#F0F5FF)
- *   dark  → black page, white text, deep blue secondary (#0A3D78)
+ *   light → white page, black text, periwinkle secondary (#D9E1F8)
+ *   dark  → black page, white text, graphite secondary (#262626)
  */
 
 import '@/global.css';
@@ -26,7 +26,7 @@ export const Colors = {
     /** Page background. */
     background: '#FFFFFF',
     /** Raised surfaces: cards, pills, selected tab, chips. */
-    secondary: '#F0F5FF',
+    secondary: '#D9E1F8',
     /** Primary copy. */
     text: '#000000',
     /** Captions, hints, metadata. */
@@ -38,7 +38,7 @@ export const Colors = {
   },
   dark: {
     background: '#000000',
-    secondary: '#0A3D78',
+    secondary: '#262626',
     text: '#FFFFFF',
     textSecondary: 'rgba(255, 255, 255, 0.72)',
     border: 'rgba(255, 255, 255, 0.18)',

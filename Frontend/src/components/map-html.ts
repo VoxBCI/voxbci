@@ -74,7 +74,7 @@ export function buildMapHtml({ people, scheme }: BuildMapHtmlOptions): string {
   :root {
     color-scheme: light;
     --bg: #ffffff;
-    --surface: #f0f5ff;
+    --surface: #d9e1f8;
     --text: #000000;
     --muted: #4a5a6a;
     --accent: #007bff;
@@ -88,7 +88,7 @@ export function buildMapHtml({ people, scheme }: BuildMapHtmlOptions): string {
   body[data-scheme='dark'] {
     color-scheme: dark;
     --bg: #000000;
-    --surface: #0a3d78;
+    --surface: #262626;
     --text: #ffffff;
     --muted: rgba(255, 255, 255, 0.72);
     --accent: #00254c;

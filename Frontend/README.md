@@ -10,7 +10,17 @@ This is an [Expo](https://expo.dev) project created with [`create-expo-app`](htt
    npm install
    ```
 
-2. Start the app
+2. Configure the map key
+
+   ```bash
+   cp .env.example .env
+   ```
+
+   Then set `EXPO_PUBLIC_MAP_API_KEY` in `.env` to the CARTO basemap key. The
+   tile URLs are built in `src/components/map-html.ts`; without a key the map
+   falls back to CARTO's unkeyed tiles.
+
+3. Start the app
 
    ```bash
    npx expo start

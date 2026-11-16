@@ -5,10 +5,11 @@ import type { Person } from '@/data/people';
  * native (`discovery-map.tsx`) and an iframe on web (`discovery-map.web.tsx`).
  *
  * Why Leaflet + CARTO: `react-native-maps` / `expo-maps` need a Google Maps API
- * key on Android. Leaflet runs entirely inside the page, so the map stays free
- * and key-free. CARTO's basemaps follow the device theme (`light_all` /
- * `dark_all`), and the OpenStreetMap + CARTO attribution stays on screen, which
- * their terms require.
+ * key on Android. Leaflet runs entirely inside the page, so no native map SDK is
+ * involved. CARTO's raster basemaps follow the device theme (Voyager in light,
+ * `dark_all` in dark); the keyed tile URLs are built from `EXPO_PUBLIC_MAP_API_KEY`
+ * (see `.env.example`), and the OpenStreetMap + CARTO attribution stays on
+ * screen, which their terms require.
  *
  * The page exposes `window.__voxbciMap` so React can push changes without
  * reloading the map (a reload would reset the viewport):
@@ -53,6 +54,27 @@ export function parseMapMessage(raw: unknown): MapMessage | null {
 
 const ATTRIBUTION =
   '&copy; <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions" target="_blank" rel="noopener">CARTO</a>';
+
+/**
+ * CARTO raster basemaps. Light mode uses Voyager (the style issued with the
+ * account key) and dark mode uses `dark_all`, so the map keeps following the
+ * device theme.
+ *
+ * The key lives in `EXPO_PUBLIC_MAP_API_KEY` (see `.env.example`). Expo inlines
+ * `EXPO_PUBLIC_*` values into the bundle, which is expected for a basemap key —
+ * rotate it in the CARTO console if it is ever abused.
+ */
+const MAP_TILES_KEY = process.env.EXPO_PUBLIC_MAP_API_KEY ?? '';
+
+function cartoTileUrl(style: 'voyager' | 'dark_all'): string {
+  const url = `https://basemaps.cartocdn.com/rastertiles/${style}/{z}/{x}/{y}.png`;
+  return MAP_TILES_KEY ? `${url}?key=${encodeURIComponent(MAP_TILES_KEY)}` : url;
+}
+
+const MAP_TILES = {
+  light: cartoTileUrl('voyager'),
+  dark: cartoTileUrl('dark_all'),
+} as const;
 
 /** JSON that is safe to inline in a `<script>` and in a JS string literal. */
 function inlineJson(value: unknown): string {
@@ -232,10 +254,7 @@ export function buildMapHtml({ people, scheme }: BuildMapHtmlOptions): string {
   var INITIAL_SCHEME = ${inlineJson(scheme)};
   var ATTRIBUTION = ${inlineJson(ATTRIBUTION)};
 
-  var TILES = {
-    light: 'https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png',
-    dark: 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}.png'
-  };
+  var TILES = ${inlineJson(MAP_TILES)};
 
   // Leaflet only paints layers once the map has a view, so seed one from the
   // people themselves; fitAll() tightens it to the exact bounds afterwards.
@@ -264,8 +283,8 @@ export function buildMapHtml({ people, scheme }: BuildMapHtmlOptions): string {
     }
     tiles = L.tileLayer(TILES[scheme] || TILES.light, {
       attribution: ATTRIBUTION,
-      subdomains: 'abcd',
-      maxZoom: 20
+      maxZoom: 20,
+      crossOrigin: true
     });
     tiles.addTo(map);
   }

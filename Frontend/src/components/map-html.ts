@@ -78,7 +78,6 @@ export function buildMapHtml({ people, scheme }: BuildMapHtmlOptions): string {
     --text: #000000;
     --muted: #4a5a6a;
     --accent: #007bff;
-    --border: rgba(0, 0, 0, 0.10);
     --ring: #ffffff;
     --pin-bg: #000000;
     --pin-text: #ffffff;
@@ -92,7 +91,6 @@ export function buildMapHtml({ people, scheme }: BuildMapHtmlOptions): string {
     --text: #ffffff;
     --muted: rgba(255, 255, 255, 0.72);
     --accent: #00254c;
-    --border: rgba(255, 255, 255, 0.18);
     --ring: #00254c;
     --pin-bg: #ffffff;
     --pin-text: #000000;
@@ -150,14 +148,14 @@ export function buildMapHtml({ people, scheme }: BuildMapHtmlOptions): string {
   }
   .leaflet-popup-content-wrapper {
     border-radius: 14px;
-    border: 1px solid var(--border);
+    border: 1px solid var(--surface);
   }
   .leaflet-popup-content {
     margin: 14px 16px;
     line-height: 1.4;
   }
   .leaflet-popup-tip {
-    border: 1px solid var(--border);
+    border: 1px solid var(--surface);
   }
   .card {
     display: flex;
@@ -210,7 +208,7 @@ export function buildMapHtml({ people, scheme }: BuildMapHtmlOptions): string {
     padding: 8px 14px;
     border-radius: 999px;
     background: var(--bg);
-    border: 1px solid var(--border);
+    border: 1px solid var(--surface);
     box-shadow: var(--shadow);
     color: var(--text);
     font-size: 12px;

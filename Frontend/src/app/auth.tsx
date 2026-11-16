@@ -3,7 +3,7 @@ import { Pressable, StyleSheet } from 'react-native';
 
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
-import { Radius, Spacing } from '@/constants/theme';
+import { Radius, Spacing, StrokeWidth } from '@/constants/theme';
 import { useTheme } from '@/hooks/use-theme';
 
 export default function AuthScreen() {
@@ -20,7 +20,11 @@ export default function AuthScreen() {
         onPress={() => router.replace('/telemetry')}
         style={({ pressed }) => [
           styles.button,
-          { backgroundColor: theme.secondary, opacity: pressed ? 0.8 : 1 },
+          {
+            backgroundColor: theme.background,
+            borderColor: theme.secondary,
+            opacity: pressed ? 0.8 : 1,
+          },
         ]}>
         <ThemedText style={styles.buttonLabel}>Continue</ThemedText>
       </Pressable>
@@ -44,6 +48,7 @@ const styles = StyleSheet.create({
     paddingVertical: Spacing.two + Spacing.one,
     paddingHorizontal: Spacing.five,
     borderRadius: Radius.pill,
+    borderWidth: StrokeWidth,
   },
   buttonLabel: {
     fontWeight: '600',

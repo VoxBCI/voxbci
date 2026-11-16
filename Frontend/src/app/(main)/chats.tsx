@@ -1,6 +1,7 @@
 import { StyleSheet, View } from 'react-native';
 
 import { Avatar } from '@/components/avatar';
+import { OutlinedView } from '@/components/outlined-view';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import { MaxContentWidth, Radius, Spacing } from '@/constants/theme';
@@ -13,7 +14,7 @@ export default function ChatsScreen() {
     <ThemedView style={styles.screen}>
       <View style={styles.content}>
         {chats.map((chat) => (
-          <ThemedView key={chat.id} type="secondary" style={styles.row}>
+          <OutlinedView key={chat.id} style={styles.row}>
             <Avatar name={chat.name} source={chat.avatar} />
 
             <View style={styles.rowText}>
@@ -24,7 +25,7 @@ export default function ChatsScreen() {
                 {chat.preview}
               </ThemedText>
             </View>
-          </ThemedView>
+          </OutlinedView>
         ))}
       </View>
     </ThemedView>

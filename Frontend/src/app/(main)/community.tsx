@@ -5,7 +5,7 @@ import { StyleSheet, TextInput, View } from 'react-native';
 import DiscoveryMap from '@/components/discovery-map';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
-import { MaxContentWidth, Radius, Spacing } from '@/constants/theme';
+import { MaxContentWidth, Radius, Spacing, StrokeWidth } from '@/constants/theme';
 import { PEOPLE, type Person } from '@/data/people';
 import { useTheme } from '@/hooks/use-theme';
 
@@ -47,9 +47,9 @@ export default function CommunityScreen() {
             style={[
               styles.input,
               {
-                backgroundColor: theme.secondary,
+                backgroundColor: theme.background,
                 color: theme.text,
-                borderColor: theme.border,
+                borderColor: theme.secondary,
               },
             ]}
           />
@@ -88,7 +88,7 @@ const styles = StyleSheet.create({
   },
   input: {
     borderRadius: Radius.md,
-    borderWidth: StyleSheet.hairlineWidth,
+    borderWidth: StrokeWidth,
     fontSize: 16,
     paddingHorizontal: Spacing.three,
     paddingVertical: Spacing.three,

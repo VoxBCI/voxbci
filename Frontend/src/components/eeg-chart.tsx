@@ -3,7 +3,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { StyleSheet, Text, View, useWindowDimensions, type LayoutChangeEvent } from 'react-native';
 import Svg, { Circle, G, Line, Path, Text as SvgText } from 'react-native-svg';
 
-import { Fonts, MaxContentWidth, Radius, Spacing } from '@/constants/theme';
+import { Fonts, MaxContentWidth, Radius, Spacing, StrokeWidth } from '@/constants/theme';
 import {
   buildEegFrame,
   EEG_CHANNELS,
@@ -20,14 +20,14 @@ const GUTTER = 54;
 const RIGHT_PADDING = 12;
 
 /**
- * The card follows the device theme, but never sits on the page background:
- * both palettes use the raised-surface colour (`Colors[scheme].secondary`) with
- * ink tuned for it, so the chart stays distinct from the page either way.
+ * The card follows the component-surface rule: the page colour fills it and the
+ * raised-surface colour (`Colors[scheme].secondary`) outlines it, so it sits
+ * flush with the page and is defined by its stroke.
  */
 const PALETTES = {
   light: {
-    background: '#D9E1F8',
-    border: 'rgba(0, 37, 76, 0.14)',
+    background: '#FFFFFF',
+    border: '#D9E1F8',
     grid: 'rgba(0, 37, 76, 0.14)',
     midline: 'rgba(0, 37, 76, 0.07)',
     muted: 'rgba(0, 37, 76, 0.55)',
@@ -41,8 +41,8 @@ const PALETTES = {
     } as Record<string, string>,
   },
   dark: {
-    background: '#262626',
-    border: 'rgba(56, 189, 248, 0.18)',
+    background: '#000000',
+    border: '#262626',
     grid: 'rgba(148, 163, 184, 0.13)',
     midline: 'rgba(148, 163, 184, 0.07)',
     muted: 'rgba(226, 232, 240, 0.55)',
@@ -300,7 +300,7 @@ export function EegChart() {
 const styles = StyleSheet.create({
   card: {
     width: '100%',
-    borderWidth: StyleSheet.hairlineWidth,
+    borderWidth: StrokeWidth,
     borderRadius: Radius.lg,
     padding: Spacing.three,
     gap: Spacing.three,

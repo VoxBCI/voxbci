@@ -1,5 +1,6 @@
 import { StyleSheet, View } from 'react-native';
 
+import { OutlinedView } from '@/components/outlined-view';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import { MaxContentWidth, Radius, Spacing } from '@/constants/theme';
@@ -8,12 +9,12 @@ export default function SettingsScreen() {
   return (
     <ThemedView style={styles.screen}>
       <View style={styles.content}>
-        <ThemedView type="secondary" style={styles.card}>
+        <OutlinedView style={styles.card}>
           <ThemedText type="smallBold">Appearance</ThemedText>
           <ThemedText type="small" themeColor="textSecondary">
             Follows your device theme.
           </ThemedText>
-        </ThemedView>
+        </OutlinedView>
       </View>
     </ThemedView>
   );

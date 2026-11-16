@@ -25,7 +25,10 @@ export const Colors = {
   light: {
     /** Page background. */
     background: '#FFFFFF',
-    /** Raised surfaces: cards, pills, selected tab, chips. */
+    /**
+     * Raised surfaces (the floating tab bar) and, everywhere else, the outline
+     * colour of component panels and inputs.
+     */
     secondary: '#D9E1F8',
     /** Primary copy. */
     text: '#000000',
@@ -90,6 +93,13 @@ export const Radius = {
   lg: 20,
   pill: 999,
 } as const;
+
+/**
+ * Component-surface rule: panels, cards and inputs are filled with the page
+ * colour (`background`) and outlined with `secondary`. The floating tab bar is
+ * the exception — it keeps the `secondary` fill.
+ */
+export const StrokeWidth = 1;
 
 export const BottomTabInset = Platform.select({ ios: 50, android: 80 }) ?? 0;
 export const MaxContentWidth = 800;

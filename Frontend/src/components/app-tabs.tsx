@@ -16,7 +16,7 @@ export default function AppTabs() {
       </NativeTabs.Trigger>
 
       <NativeTabs.Trigger name="community">
-        <NativeTabs.Trigger.Icon sf="rectangle.stack" md="web_stories" />
+        <NativeTabs.Trigger.Icon sf="safari" md="explore_nearby" />
         <NativeTabs.Trigger.Label hidden>Community</NativeTabs.Trigger.Label>
       </NativeTabs.Trigger>
 

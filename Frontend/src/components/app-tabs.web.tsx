@@ -23,14 +23,14 @@ const BAR_MAX_WIDTH = 340;
 const INACTIVE_OPACITY = 0.5;
 
 /**
- * Google Material Symbols glyph names. `airwave`, `web_stories` and
+ * Google Material Symbols glyph names. `airwave`, `explore_nearby` and
  * `comic_bubble` only exist in the newer Material Symbols set
  * (https://fonts.google.com/icons) — the Material Icons font bundled with
  * `@expo/vector-icons` has no such glyphs.
  */
-type SymbolName = 'airwave' | 'web_stories' | 'comic_bubble';
+type SymbolName = 'airwave' | 'explore_nearby' | 'comic_bubble';
 
-const SYMBOLS: SymbolName[] = ['airwave', 'web_stories', 'comic_bubble'];
+const SYMBOLS: SymbolName[] = ['airwave', 'explore_nearby', 'comic_bubble'];
 
 /** GitHub-style identicon standing in for the signed-in profile. */
 const AVATAR = require('../../assets/images/avatar-identicon.png');
@@ -39,7 +39,7 @@ const AVATAR_MUTED = require('../../assets/images/avatar-identicon-muted.png');
 
 /**
  * Material Symbols draws each icon name as a ligature, so the string
- * "web_stories" renders as a single glyph. We bundle a ~2 KB subset holding just
+ * "explore_nearby" renders as a single glyph. We bundle a ~2 KB subset holding just
  * the three glyph tabs instead of pulling the full font from a CDN.
  */
 const FONT_FAMILY = 'VoxMaterialSymbols';
@@ -143,7 +143,7 @@ export default function AppTabs() {
         </TabTrigger>
 
         <TabTrigger name="community" href="/community" asChild>
-          <TabIcon icon="web_stories" label="Community" ready={fontReady} />
+          <TabIcon icon="explore_nearby" label="Community" ready={fontReady} />
         </TabTrigger>
 
         <TabTrigger name="chats" href="/chats" asChild>

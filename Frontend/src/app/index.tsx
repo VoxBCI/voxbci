@@ -22,9 +22,6 @@ export default function SplashRoute() {
       <ThemedText themeColor="accent" style={styles.logo}>
         VOX
       </ThemedText>
-      <ThemedText themeColor="textSecondary" type="small">
-        Brain-to-voice
-      </ThemedText>
     </ThemedView>
   );
 }

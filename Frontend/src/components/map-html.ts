@@ -147,7 +147,7 @@ export function buildMapHtml({ people, scheme }: BuildMapHtmlOptions): string {
     justify-content: center;
     width: 36px;
     height: 36px;
-    border-radius: 15px;
+    border-radius: 50%;
     background: var(--pin-bg);
     color: var(--pin-text);
     border: 2px solid var(--ring);

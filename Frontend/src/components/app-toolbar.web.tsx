@@ -2,20 +2,20 @@ import { usePathname } from 'expo-router';
 import { StyleSheet, Text, type TextStyle, View } from 'react-native';
 
 import { currentTabLabel } from '@/components/app-toolbar-label';
-import { OutlinedView } from '@/components/outlined-view';
-import { CardLayout, MaxContentWidth, Radius, Spacing } from '@/constants/theme';
+import { Spacing, StrokeWidth } from '@/constants/theme';
 import { SYMBOL_FONT_FAMILY, useSymbolFont } from '@/hooks/use-symbol-font.web';
 import { useTheme } from '@/hooks/use-theme';
 
 const ICON_SIZE = 40;
-const TOOLBAR_PADDING = 15;
+const TOOLBAR_HEIGHT = 50;
+const TOOLBAR_PADDING = 5;
 
 /**
- * Small top-left toolbar shared by the four main tabs: a Material Symbols
+ * Full-bleed top toolbar shared by the four main tabs: a Material Symbols
  * "neurology" glyph plus the name of the tab that is currently open.
  *
- * Like every other panel it follows the component-surface rule (`OutlinedView`)
- * and sits inside the card gutter, so it lines up with the cards underneath.
+ * It spans the whole viewport, has square corners and only a bottom outline,
+ * so it reads as a header rule rather than a floating card.
  */
 export function AppToolbar() {
   const pathname = usePathname();
@@ -23,41 +23,36 @@ export function AppToolbar() {
   const fontReady = useSymbolFont(['neurology'], ICON_SIZE);
 
   return (
-    <View style={styles.gutter}>
-      <OutlinedView style={styles.toolbar}>
-        <Text
-          accessibilityElementsHidden
-          aria-hidden
-          importantForAccessibility="no-hide-descendants"
-          style={[
-            styles.glyph,
-            { color: theme.text, opacity: fontReady ? 1 : 0 },
-          ]}>
-          neurology
-        </Text>
-        <Text accessibilityRole="header" style={[styles.label, { color: theme.text }]}>
-          {currentTabLabel(pathname)}
-        </Text>
-      </OutlinedView>
+    <View
+      style={[
+        styles.toolbar,
+        { backgroundColor: theme.background, borderBottomColor: theme.secondary },
+      ]}>
+      <Text
+        accessibilityElementsHidden
+        aria-hidden
+        importantForAccessibility="no-hide-descendants"
+        style={[styles.glyph, { color: theme.text, opacity: fontReady ? 1 : 0 }]}>
+        neurology
+      </Text>
+      <Text accessibilityRole="header" style={[styles.label, { color: theme.text }]}>
+        {currentTabLabel(pathname)}
+      </Text>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  gutter: {
-    width: '100%',
-    maxWidth: MaxContentWidth,
-    alignSelf: 'center',
-    alignItems: 'flex-start',
-    paddingTop: CardLayout.gutter,
-    paddingHorizontal: CardLayout.gutter,
-  },
   toolbar: {
+    width: '100%',
+    height: TOOLBAR_HEIGHT,
     flexDirection: 'row',
     alignItems: 'center',
     gap: Spacing.two,
     padding: TOOLBAR_PADDING,
-    borderRadius: Radius.md,
+    // Header rule: square corners and a bottom outline only.
+    borderRadius: 0,
+    borderBottomWidth: StrokeWidth,
   },
   glyph: {
     fontFamily: SYMBOL_FONT_FAMILY,

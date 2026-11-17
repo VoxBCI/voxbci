@@ -4,7 +4,7 @@ import { Avatar } from '@/components/avatar';
 import { OutlinedView } from '@/components/outlined-view';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
-import { MaxContentWidth, Radius, Spacing } from '@/constants/theme';
+import { CardLayout, MaxContentWidth, Radius, Spacing } from '@/constants/theme';
 import { useChats } from '@/hooks/use-chats';
 
 export default function ChatsScreen() {
@@ -41,10 +41,10 @@ const styles = StyleSheet.create({
     width: '100%',
     maxWidth: MaxContentWidth,
     alignSelf: 'center',
-    padding: Spacing.four,
-    // Clears the floating tab bar.
-    paddingBottom: Spacing.six + Spacing.five,
-    gap: Spacing.three,
+    paddingTop: CardLayout.gutter,
+    paddingHorizontal: CardLayout.gutter,
+    paddingBottom: CardLayout.bottomInset,
+    gap: CardLayout.gap,
   },
   row: {
     flexDirection: 'row',

@@ -2,7 +2,7 @@ import { ScrollView, StyleSheet, View } from 'react-native';
 
 import { EegChart } from '@/components/eeg-chart';
 import { ThemedView } from '@/components/themed-view';
-import { MaxContentWidth, Spacing } from '@/constants/theme';
+import { CardLayout, MaxContentWidth } from '@/constants/theme';
 
 export default function TelemetryScreen() {
   return (
@@ -23,9 +23,9 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   scrollContent: {
-    padding: Spacing.four,
-    // Clears the floating tab bar.
-    paddingBottom: Spacing.six + Spacing.five,
+    paddingTop: CardLayout.gutter,
+    paddingHorizontal: CardLayout.gutter,
+    paddingBottom: CardLayout.bottomInset,
   },
   content: {
     width: '100%',

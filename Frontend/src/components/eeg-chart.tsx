@@ -3,7 +3,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { StyleSheet, Text, View, useWindowDimensions, type LayoutChangeEvent } from 'react-native';
 import Svg, { Circle, G, Line, Path, Text as SvgText } from 'react-native-svg';
 
-import { Fonts, MaxContentWidth, Radius, Spacing, StrokeWidth } from '@/constants/theme';
+import { CardLayout, Fonts, MaxContentWidth, Radius, Spacing, StrokeWidth } from '@/constants/theme';
 import {
   buildEegFrame,
   EEG_CHANNELS,
@@ -197,7 +197,10 @@ export function EegChart() {
   // viewport (same padding/max-width as the screen) and let the measured value
   // refine it once the plot actually lays out.
   const estimatedCardWidth = Math.min(
-    Math.max(viewportWidth > 0 ? viewportWidth - Spacing.four * 2 : MaxContentWidth, 240),
+    Math.max(
+      viewportWidth > 0 ? viewportWidth - CardLayout.gutter * 2 : MaxContentWidth,
+      240,
+    ),
     MaxContentWidth,
   );
   const estimatedPlotWidth = Math.max(

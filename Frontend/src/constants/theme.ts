@@ -95,6 +95,23 @@ export const Radius = {
 } as const;
 
 /**
+ * Card-layout rule: every card screen keeps its cards close to the screen
+ * edges on phones — one `Spacing.two` gutter on the sides and above the first
+ * card, one `Spacing.two` gap between cards, and a bottom inset that clears the
+ * floating tab bar.
+ *
+ * Exceptions: the tab bar itself and the map's floating search field.
+ */
+export const CardLayout = {
+  /** Side gutters and the space above the first card. */
+  gutter: Spacing.two,
+  /** Vertical space between cards. */
+  gap: Spacing.two,
+  /** Clears the 60px tab pill that floats 20px above the bottom edge. */
+  bottomInset: Spacing.six + Spacing.four,
+} as const;
+
+/**
  * Component-surface rule: panels, cards and inputs are filled with the page
  * colour (`background`) and outlined with `secondary`. The floating tab bar is
  * the exception — it keeps the `secondary` fill.

@@ -106,7 +106,7 @@ export default function AppTabs() {
         </TabTrigger>
 
         <TabTrigger name="settings" href="/settings" asChild>
-          <TabIcon avatar label="Settings" />
+          <TabIcon avatar label="Profile" />
         </TabTrigger>
       </TabList>
     </Tabs>

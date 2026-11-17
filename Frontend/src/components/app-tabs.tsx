@@ -29,7 +29,7 @@ export default function AppTabs() {
         <NativeTabs.Trigger.Icon
           src={require('../../assets/images/avatar-identicon.png')}
         />
-        <NativeTabs.Trigger.Label hidden>Settings</NativeTabs.Trigger.Label>
+        <NativeTabs.Trigger.Label hidden>Profile</NativeTabs.Trigger.Label>
       </NativeTabs.Trigger>
     </NativeTabs>
   );

@@ -150,16 +150,16 @@ function Trace({ trace, row, width }: { trace: EegTrace; row: number; width: num
         d={path}
         fill="none"
         stroke={channel.color}
-        strokeWidth={4.5}
+        strokeWidth={3}
         strokeLinecap="round"
         strokeLinejoin="round"
-        opacity={0.16}
+        opacity={0.14}
       />
       <Path
         d={path}
         fill="none"
         stroke={channel.color}
-        strokeWidth={1.7}
+        strokeWidth={1.2}
         strokeLinecap="round"
         strokeLinejoin="round"
       />

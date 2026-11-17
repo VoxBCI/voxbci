@@ -105,7 +105,7 @@ export default function AppTabs() {
           <TabIcon icon="comic_bubble" label="Chats" ready={fontReady} />
         </TabTrigger>
 
-        <TabTrigger name="settings" href="/settings" asChild>
+        <TabTrigger name="profile" href="/profile" asChild>
           <TabIcon avatar label="Profile" />
         </TabTrigger>
       </TabList>

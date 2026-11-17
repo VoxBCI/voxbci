@@ -25,7 +25,7 @@ export default function AppTabs() {
         <NativeTabs.Trigger.Label hidden>Chats</NativeTabs.Trigger.Label>
       </NativeTabs.Trigger>
 
-      <NativeTabs.Trigger name="settings">
+      <NativeTabs.Trigger name="profile">
         <NativeTabs.Trigger.Icon
           src={require('../../assets/images/avatar-identicon.png')}
         />

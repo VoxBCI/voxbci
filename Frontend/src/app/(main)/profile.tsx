@@ -5,7 +5,7 @@ import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import { CardLayout, MaxContentWidth, Radius, Spacing } from '@/constants/theme';
 
-export default function SettingsScreen() {
+export default function ProfileScreen() {
   return (
     <ThemedView style={styles.screen}>
       <View style={styles.content}>

@@ -3,7 +3,7 @@ const TAB_LABELS: Record<string, string> = {
   telemetry: 'Telemetry',
   community: 'Community',
   chats: 'Chats',
-  settings: 'Profile',
+  profile: 'Profile',
 };
 
 /** Turns a router pathname (`/chats`, `/chats/`) into the tab's display name. */

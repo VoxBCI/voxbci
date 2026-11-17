@@ -1,6 +1,5 @@
-import { Asset } from 'expo-asset';
 import { TabList, TabSlot, TabTrigger, Tabs } from 'expo-router/ui';
-import { forwardRef, useEffect, useState, type ComponentRef } from 'react';
+import { forwardRef, type ComponentRef } from 'react';
 import {
   Image,
   Pressable,
@@ -13,6 +12,7 @@ import {
 } from 'react-native';
 
 import { Radius, Spacing } from '@/constants/theme';
+import { SYMBOL_FONT_FAMILY, useSymbolFont, type SymbolName } from '@/hooks/use-symbol-font.web';
 import { useTheme } from '@/hooks/use-theme';
 
 const ICON_SIZE = 26;
@@ -22,58 +22,13 @@ const BAR_MAX_WIDTH = 340;
 /** Inactive tabs are dimmed to half opacity; the active tab is solid. */
 const INACTIVE_OPACITY = 0.5;
 
-/**
- * Google Material Symbols glyph names. `airwave`, `explore_nearby` and
- * `comic_bubble` only exist in the newer Material Symbols set
- * (https://fonts.google.com/icons) — the Material Icons font bundled with
- * `@expo/vector-icons` has no such glyphs.
- */
-type SymbolName = 'airwave' | 'explore_nearby' | 'comic_bubble';
-
-const SYMBOLS: SymbolName[] = ['airwave', 'explore_nearby', 'comic_bubble'];
+/** Glyphs drawn by the tab bar (the toolbar adds `neurology` to the same subset). */
+const TAB_SYMBOLS: SymbolName[] = ['airwave', 'explore_nearby', 'comic_bubble'];
 
 /** GitHub-style identicon standing in for the signed-in profile. */
 const AVATAR = require('../../assets/images/avatar-identicon.png');
 /** Desaturated copy, used while the tab is inactive. */
 const AVATAR_MUTED = require('../../assets/images/avatar-identicon-muted.png');
-
-/**
- * Material Symbols draws each icon name as a ligature, so the string
- * "explore_nearby" renders as a single glyph. We bundle a ~2 KB subset holding just
- * the three glyph tabs instead of pulling the full font from a CDN.
- */
-const FONT_FAMILY = 'VoxMaterialSymbols';
-const FONT_STYLE_ID = 'vox-material-symbols';
-const FONT_ASSET = require('../../assets/fonts/material-symbols-outlined-subset.woff2');
-
-function useSymbolFont() {
-  const [ready, setReady] = useState(false);
-
-  useEffect(() => {
-    let active = true;
-
-    if (!document.getElementById(FONT_STYLE_ID)) {
-      const asset = Asset.fromModule(FONT_ASSET);
-      const style = document.createElement('style');
-      style.id = FONT_STYLE_ID;
-      style.textContent = `@font-face{font-family:'${FONT_FAMILY}';src:url("${asset.localUri ?? asset.uri}") format('woff2');font-style:normal;font-weight:normal;font-display:block;}`;
-      document.head.appendChild(style);
-    }
-
-    document.fonts
-      .load(`${ICON_SIZE}px "${FONT_FAMILY}"`, SYMBOLS.join(' '))
-      .then(() => {
-        if (active) setReady(true);
-      })
-      .catch((error) => console.warn('Material Symbols font failed to load', error));
-
-    return () => {
-      active = false;
-    };
-  }, []);
-
-  return ready;
-}
 
 type TabIconProps = Omit<PressableProps, 'children'> & {
   /** Material Symbols glyph name. */
@@ -131,7 +86,7 @@ const TabIcon = forwardRef<ComponentRef<typeof View>, TabIconProps>(function Tab
 });
 
 export default function AppTabs() {
-  const fontReady = useSymbolFont();
+  const fontReady = useSymbolFont(TAB_SYMBOLS, ICON_SIZE);
   const theme = useTheme();
 
   return (
@@ -191,7 +146,7 @@ const styles = StyleSheet.create({
     borderRadius: Radius.pill,
   },
   glyph: {
-    fontFamily: FONT_FAMILY,
+    fontFamily: SYMBOL_FONT_FAMILY,
     fontSize: ICON_SIZE,
     lineHeight: ICON_SIZE,
     textAlign: 'center',

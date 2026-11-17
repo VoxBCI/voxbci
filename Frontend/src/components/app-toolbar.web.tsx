@@ -6,7 +6,7 @@ import { CardLayout, MaxContentWidth, Spacing, StrokeWidth } from '@/constants/t
 import { SYMBOL_FONT_FAMILY, useSymbolFont } from '@/hooks/use-symbol-font.web';
 import { useTheme } from '@/hooks/use-theme';
 
-const ICON_SIZE = 40;
+const ICON_SIZE = 30;
 const TOOLBAR_HEIGHT = 50;
 const TOOLBAR_PADDING = 5;
 

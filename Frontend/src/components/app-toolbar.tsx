@@ -6,7 +6,7 @@ import { currentTabLabel } from '@/components/app-toolbar-label';
 import { CardLayout, MaxContentWidth, Spacing, StrokeWidth } from '@/constants/theme';
 import { useTheme } from '@/hooks/use-theme';
 
-const ICON_SIZE = 40;
+const ICON_SIZE = 30;
 const TOOLBAR_HEIGHT = 50;
 const TOOLBAR_PADDING = 5;
 

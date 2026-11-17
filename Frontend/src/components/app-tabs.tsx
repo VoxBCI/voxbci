@@ -11,7 +11,7 @@ export default function AppTabs() {
   return (
     <NativeTabs>
       <NativeTabs.Trigger name="telemetry">
-        <NativeTabs.Trigger.Icon sf="speedometer" md="dashboard" />
+        <NativeTabs.Trigger.Icon sf="waveform" md="airwave" />
         <NativeTabs.Trigger.Label hidden>Telemetry</NativeTabs.Trigger.Label>
       </NativeTabs.Trigger>
 

@@ -23,13 +23,14 @@ const BAR_MAX_WIDTH = 340;
 const INACTIVE_OPACITY = 0.5;
 
 /**
- * Google Material Symbols glyph names. `web_stories` and `comic_bubble` only
- * exist in the newer Material Symbols set (https://fonts.google.com/icons) —
- * the Material Icons font bundled with `@expo/vector-icons` has no such glyphs.
+ * Google Material Symbols glyph names. `airwave`, `web_stories` and
+ * `comic_bubble` only exist in the newer Material Symbols set
+ * (https://fonts.google.com/icons) — the Material Icons font bundled with
+ * `@expo/vector-icons` has no such glyphs.
  */
-type SymbolName = 'dashboard' | 'web_stories' | 'comic_bubble';
+type SymbolName = 'airwave' | 'web_stories' | 'comic_bubble';
 
-const SYMBOLS: SymbolName[] = ['dashboard', 'web_stories', 'comic_bubble'];
+const SYMBOLS: SymbolName[] = ['airwave', 'web_stories', 'comic_bubble'];
 
 /** GitHub-style identicon standing in for the signed-in profile. */
 const AVATAR = require('../../assets/images/avatar-identicon.png');
@@ -138,7 +139,7 @@ export default function AppTabs() {
       <TabSlot style={styles.slot} />
       <TabList style={[styles.tabList, { backgroundColor: theme.secondary } as ViewStyle]}>
         <TabTrigger name="telemetry" href="/telemetry" asChild>
-          <TabIcon icon="dashboard" label="Telemetry" ready={fontReady} />
+          <TabIcon icon="airwave" label="Telemetry" ready={fontReady} />
         </TabTrigger>
 
         <TabTrigger name="community" href="/community" asChild>

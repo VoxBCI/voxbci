@@ -1,8 +1,8 @@
 import { usePathname } from 'expo-router';
-import { SymbolView } from 'expo-symbols';
 import { StyleSheet, Text, View } from 'react-native';
 
 import { currentTabLabel } from '@/components/app-toolbar-label';
+import { VoxLogo } from '@/components/vox-logo';
 import { CardLayout, MaxContentWidth, Spacing, StrokeWidth } from '@/constants/theme';
 import { useTheme } from '@/hooks/use-theme';
 
@@ -11,13 +11,12 @@ const TOOLBAR_HEIGHT = 50;
 const TOOLBAR_PADDING = 5;
 
 /**
- * Top toolbar shared by the four main tabs: a brain glyph plus the name of the
- * tab that is currently open.
+ * Top toolbar shared by the four main tabs: the VoxBCI logo plus the name of
+ * the tab that is currently open.
  *
- * `SymbolView` maps the Material Symbols "neurology" glyph on Android and the
- * closest SF Symbol on iOS. It is as wide as the cards underneath (same
- * `CardLayout.gutter` and `MaxContentWidth` cap), has square corners, no margin
- * and only a bottom outline, so it reads as a header rule rather than a card.
+ * It is as wide as the cards underneath (same `CardLayout.gutter` and
+ * `MaxContentWidth` cap), has square corners, no margin and only a bottom
+ * outline, so it reads as a header rule rather than a card.
  */
 export function AppToolbar() {
   const pathname = usePathname();
@@ -30,13 +29,7 @@ export function AppToolbar() {
           styles.toolbar,
           { backgroundColor: theme.background, borderBottomColor: theme.secondary },
         ]}>
-        <SymbolView
-          accessibilityElementsHidden
-          importantForAccessibility="no-hide-descendants"
-          name={{ ios: 'brain', android: 'neurology' }}
-          size={ICON_SIZE}
-          tintColor={theme.text}
-        />
+        <VoxLogo size={ICON_SIZE} />
         <Text accessibilityRole="header" style={[styles.label, { color: theme.text }]}>
           {currentTabLabel(pathname)}
         </Text>

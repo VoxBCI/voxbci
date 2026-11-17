@@ -2,11 +2,11 @@ import { router } from 'expo-router';
 import { useEffect } from 'react';
 import { StyleSheet } from 'react-native';
 
-import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
-import { Spacing } from '@/constants/theme';
+import { VoxLogo } from '@/components/vox-logo';
 
 const SPLASH_DURATION_MS = 3000;
+const LOGO_SIZE = 120;
 
 export default function SplashRoute() {
   useEffect(() => {
@@ -19,9 +19,7 @@ export default function SplashRoute() {
 
   return (
     <ThemedView style={styles.container}>
-      <ThemedText themeColor="accent" style={styles.logo}>
-        VOX
-      </ThemedText>
+      <VoxLogo size={LOGO_SIZE} />
     </ThemedView>
   );
 }
@@ -31,11 +29,5 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
-    gap: Spacing.two,
-  },
-  logo: {
-    fontSize: 48,
-    fontWeight: 'bold',
-    letterSpacing: 8,
   },
 });

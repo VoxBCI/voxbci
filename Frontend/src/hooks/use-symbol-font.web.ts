@@ -4,11 +4,11 @@ import { useEffect, useState } from 'react';
 /**
  * Google Material Symbols glyph names available in the bundled subset.
  *
- * `airwave`, `explore_nearby`, `comic_bubble` and `neurology` only exist in the
- * newer Material Symbols set (https://fonts.google.com/icons) — the Material
- * Icons font bundled with `@expo/vector-icons` has no such glyphs.
+ * `airwave`, `explore_nearby` and `comic_bubble` only exist in the newer
+ * Material Symbols set (https://fonts.google.com/icons) — the Material Icons
+ * font bundled with `@expo/vector-icons` has no such glyphs.
  */
-export type SymbolName = 'airwave' | 'explore_nearby' | 'comic_bubble' | 'neurology';
+export type SymbolName = 'airwave' | 'explore_nearby' | 'comic_bubble';
 
 /** CSS family the tab bar glyphs and the toolbar glyph share. */
 export const SYMBOL_FONT_FAMILY = 'VoxMaterialSymbols';
@@ -18,8 +18,8 @@ const FONT_ASSET = require('../../assets/fonts/material-symbols-outlined-subset.
 
 /**
  * Material Symbols draws each icon name as a ligature, so the string
- * "neurology" renders as a single glyph. We bundle a ~2 KB subset holding just
- * the glyphs the app uses instead of pulling the full font from a CDN.
+ * "explore_nearby" renders as a single glyph. We bundle a ~2 KB subset holding
+ * just the glyphs the app uses instead of pulling the full font from a CDN.
  *
  * Loads the subset once per document and reports when `glyphs` are ready, so
  * callers can hide the glyph until the font has downloaded (avoids flashing the

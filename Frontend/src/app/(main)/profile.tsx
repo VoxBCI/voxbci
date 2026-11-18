@@ -1,8 +1,9 @@
 import { Image, StyleSheet, View } from 'react-native';
 
+import { OutlinedView } from '@/components/outlined-view';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
-import { CardLayout, MaxContentWidth, Spacing } from '@/constants/theme';
+import { CardLayout, MaxContentWidth, Radius, Spacing } from '@/constants/theme';
 
 export default function ProfileScreen() {
   return (
@@ -18,6 +19,20 @@ export default function ProfileScreen() {
             @username
           </ThemedText>
         </View>
+
+        <OutlinedView style={styles.card}>
+          <ThemedText type="smallBold">Account settings</ThemedText>
+          <ThemedText type="small" themeColor="textSecondary">
+            Manage your account details.
+          </ThemedText>
+        </OutlinedView>
+
+        <OutlinedView style={styles.card}>
+          <ThemedText type="smallBold">Device settings</ThemedText>
+          <ThemedText type="small" themeColor="textSecondary">
+            Manage your headset and connection.
+          </ThemedText>
+        </OutlinedView>
       </View>
     </ThemedView>
   );
@@ -49,5 +64,10 @@ const styles = StyleSheet.create({
   },
   username: {
     textAlign: 'center',
+  },
+  card: {
+    borderRadius: Radius.md,
+    padding: Spacing.three,
+    gap: Spacing.half,
   },
 });

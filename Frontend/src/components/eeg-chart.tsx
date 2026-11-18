@@ -16,8 +16,8 @@ import { useThemeScheme } from '@/hooks/use-theme';
 const ROW_HEIGHT = 68;
 const TOP_PADDING = 10;
 const AXIS_HEIGHT = 24;
-/** Fits the 40px channel labels ("CH 01"). */
-const GUTTER = 132;
+/** Fits the 20px channel labels ("CH 01"). */
+const GUTTER = 72;
 const RIGHT_PADDING = 12;
 
 /**
@@ -91,17 +91,26 @@ function tracePath(
 
 function TimeAxis({ width, palette }: { width: number; palette: Palette }) {
   const { ticks, labels } = useMemo(() => {
+    const tickStep = EEG_WINDOW_SECONDS <= 1 ? 0.1 : 1;
+    const labelStep = EEG_WINDOW_SECONDS <= 1 ? 0.5 : 1;
     const tickList: number[] = [];
     const labelList: { x: number; text: string; anchor: 'start' | 'middle' | 'end' }[] = [];
+    const steps = Math.round(EEG_WINDOW_SECONDS / tickStep);
 
-    for (let second = 0; second <= EEG_WINDOW_SECONDS; second += 1) {
+    for (let i = 0; i <= steps; i += 1) {
+      const second = Number((i * tickStep).toFixed(10));
       const x = (second / EEG_WINDOW_SECONDS) * width;
       tickList.push(x);
-      labelList.push({
-        x,
-        text: `${second}`,
-        anchor: second === 0 ? 'start' : second === EEG_WINDOW_SECONDS ? 'end' : 'middle',
-      });
+
+      const isLabel = Math.abs(second / labelStep - Math.round(second / labelStep)) < 1e-6;
+      if (isLabel) {
+        const text = Number.isInteger(second) ? `${second}` : second.toFixed(1);
+        labelList.push({
+          x,
+          text,
+          anchor: i === 0 ? 'start' : i === steps ? 'end' : 'middle',
+        });
+      }
     }
 
     return { ticks: tickList, labels: labelList };
@@ -186,7 +195,7 @@ export function EegChart() {
     if (!active) return;
 
     const id = setInterval(() => {
-      setElapsed((value) => value + 0.1);
+      setElapsed((value) => value + 0.05);
     }, 100);
 
     return () => clearInterval(id);
@@ -252,17 +261,17 @@ export function EegChart() {
                 />
                 <SvgText
                   x={0}
-                  y={top + ROW_HEIGHT / 2 + 4}
+                  y={top + ROW_HEIGHT / 2 + 7}
                   fill={palette.labelInk[channel.id] ?? channel.color}
                   fontFamily={MONO}
-                  fontSize={40}
+                  fontSize={20}
                   fontWeight="700"
                   textAnchor="start">
                   {channel.id}
                 </SvgText>
                 <SvgText
                   x={0}
-                  y={top + ROW_HEIGHT / 2 + 30}
+                  y={top + ROW_HEIGHT / 2 + 20}
                   fill={palette.muted}
                   fontFamily={MONO}
                   fontSize={9}

@@ -21,25 +21,27 @@ export default function AuthScreen() {
         style={[styles.bottomHalf, { backgroundColor: theme.secondary }]}
       />
 
-      <ThemedText type="subtitle">Welcome back</ThemedText>
-      <ThemedText themeColor="textSecondary" style={styles.subtitle}>
-        Sign in placeholder — no backend wired up yet.
-      </ThemedText>
-
-      <Pressable
-        accessibilityRole="button"
-        onPress={() => router.replace('/telemetry')}
-        style={({ pressed }) => [
-          styles.button,
-          {
-            backgroundColor: BUTTON_BACKGROUND,
-            opacity: pressed ? 0.8 : 1,
-          },
-        ]}>
-        <ThemedText style={[styles.buttonLabel, { color: BUTTON_TEXT }]}>
-          Continue with Google
+      {/* Footnote + CTA share the tab bar's footprint at the bottom edge. */}
+      <View style={styles.bottomArea}>
+        <ThemedText themeColor="textSecondary" style={styles.subtitle}>
+          Sign in placeholder — no backend wired up yet.
         </ThemedText>
-      </Pressable>
+
+        <Pressable
+          accessibilityRole="button"
+          onPress={() => router.replace('/telemetry')}
+          style={({ pressed }) => [
+            styles.button,
+            {
+              backgroundColor: BUTTON_BACKGROUND,
+              opacity: pressed ? 0.8 : 1,
+            },
+          ]}>
+          <ThemedText style={[styles.buttonLabel, { color: BUTTON_TEXT }]}>
+            Continue with Google
+          </ThemedText>
+        </Pressable>
+      </View>
     </ThemedView>
   );
 }
@@ -47,10 +49,6 @@ export default function AuthScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-    gap: Spacing.three,
-    padding: Spacing.four,
   },
   subtitle: {
     textAlign: 'center',
@@ -63,16 +61,22 @@ const styles = StyleSheet.create({
     right: 0,
     bottom: 0,
   },
-  /** Same footprint and position as the floating tab bar. */
-  button: {
+  /** Same width and bottom inset as the floating tab bar. */
+  bottomArea: {
     position: 'absolute',
-    bottom: FloatingPill.inset,
+    bottom: 0,
     left: 0,
     right: 0,
     width: FloatingPill.width,
     maxWidth: FloatingPill.maxWidth,
-    height: FloatingPill.height,
     marginHorizontal: 'auto',
+    paddingBottom: FloatingPill.inset,
+    alignItems: 'center',
+    gap: Spacing.two,
+  },
+  button: {
+    width: '100%',
+    height: FloatingPill.height,
     alignItems: 'center',
     justifyContent: 'center',
     borderRadius: Radius.pill,

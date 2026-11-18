@@ -7,9 +7,8 @@ import type { Person } from '@/data/people';
  * Why Leaflet + CARTO: `react-native-maps` / `expo-maps` need a Google Maps API
  * key on Android. Leaflet runs entirely inside the page, so no native map SDK is
  * involved. CARTO's raster basemaps follow the device theme (Voyager in light,
- * `dark_all` in dark); the keyed tile URLs are built from `EXPO_PUBLIC_MAP_API_KEY`
- * (see `.env.example`), and the OpenStreetMap + CARTO attribution stays on
- * screen, which their terms require.
+ * `dark_all` in dark) via public tile URLs, and the OpenStreetMap + CARTO
+ * attribution stays on screen, which their terms require.
  *
  * The page exposes `window.__voxbciMap` so React can push changes without
  * reloading the map (a reload would reset the viewport):
@@ -56,24 +55,13 @@ const ATTRIBUTION =
   '&copy; <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions" target="_blank" rel="noopener">CARTO</a>';
 
 /**
- * CARTO raster basemaps. Light mode uses Voyager (the style issued with the
- * account key) and dark mode uses `dark_all`, so the map keeps following the
- * device theme.
- *
- * The key lives in `EXPO_PUBLIC_MAP_API_KEY` (see `.env.example`). Expo inlines
- * `EXPO_PUBLIC_*` values into the bundle, which is expected for a basemap key —
- * rotate it in the CARTO console if it is ever abused.
+ * CARTO raster basemaps. Voyager in light mode and dark_all in dark mode keep
+ * the map aligned with the device theme. Public tile URLs avoid keyed/CORS
+ * issues in the sandboxed srcdoc iframe.
  */
-const MAP_TILES_KEY = process.env.EXPO_PUBLIC_MAP_API_KEY ?? '';
-
-function cartoTileUrl(style: 'voyager' | 'dark_all'): string {
-  const url = `https://basemaps.cartocdn.com/rastertiles/${style}/{z}/{x}/{y}.png`;
-  return MAP_TILES_KEY ? `${url}?key=${encodeURIComponent(MAP_TILES_KEY)}` : url;
-}
-
 const MAP_TILES = {
-  light: cartoTileUrl('voyager'),
-  dark: cartoTileUrl('dark_all'),
+  light: 'https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png',
+  dark: 'https://{s}.basemaps.cartocdn.com/rastertiles/dark_all/{z}/{x}/{y}{r}.png',
 } as const;
 
 /** JSON that is safe to inline in a `<script>` and in a JS string literal. */
@@ -284,7 +272,7 @@ export function buildMapHtml({ people, scheme }: BuildMapHtmlOptions): string {
     tiles = L.tileLayer(TILES[scheme] || TILES.light, {
       attribution: ATTRIBUTION,
       maxZoom: 20,
-      crossOrigin: true
+      subdomains: 'abcd',
     });
     tiles.addTo(map);
   }

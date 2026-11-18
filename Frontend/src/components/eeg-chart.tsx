@@ -195,7 +195,7 @@ export function EegChart() {
     if (!active) return;
 
     const id = setInterval(() => {
-      setElapsed((value) => value + 0.05);
+      setElapsed((value) => value + 0.015);
     }, 100);
 
     return () => clearInterval(id);

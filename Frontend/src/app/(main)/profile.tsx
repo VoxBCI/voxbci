@@ -1,20 +1,23 @@
-import { StyleSheet, View } from 'react-native';
+import { Image, StyleSheet, View } from 'react-native';
 
-import { OutlinedView } from '@/components/outlined-view';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
-import { CardLayout, MaxContentWidth, Radius, Spacing } from '@/constants/theme';
+import { CardLayout, MaxContentWidth, Spacing } from '@/constants/theme';
 
 export default function ProfileScreen() {
   return (
     <ThemedView style={styles.screen}>
       <View style={styles.content}>
-        <OutlinedView style={styles.card}>
-          <ThemedText type="smallBold">Appearance</ThemedText>
-          <ThemedText type="small" themeColor="textSecondary">
-            Follows your device theme.
+        <View style={styles.profileHeader}>
+          <Image
+            source={require('../../../assets/images/avatar-identicon.png')}
+            style={styles.avatar}
+            accessibilityLabel="Profile picture"
+          />
+          <ThemedText themeColor="textSecondary" style={styles.username}>
+            @username
           </ThemedText>
-        </OutlinedView>
+        </View>
       </View>
     </ThemedView>
   );
@@ -34,9 +37,17 @@ const styles = StyleSheet.create({
     paddingBottom: CardLayout.bottomInset,
     gap: CardLayout.gap,
   },
-  card: {
-    borderRadius: Radius.md,
-    padding: Spacing.three,
-    gap: Spacing.half,
+  profileHeader: {
+    alignItems: 'center',
+    gap: Spacing.two,
+    paddingTop: Spacing.four,
+  },
+  avatar: {
+    width: 80,
+    height: 80,
+    borderRadius: 40,
+  },
+  username: {
+    textAlign: 'center',
   },
 });

@@ -1,6 +1,9 @@
 import { TabList, TabSlot, TabTrigger, Tabs } from 'expo-router/ui';
-import { forwardRef, type ComponentRef } from 'react';
+import { usePathname } from 'expo-router';
+import { forwardRef, useEffect, useRef, useState, type ComponentRef } from 'react';
 import {
+  Animated,
+  Easing,
   Image,
   Pressable,
   StyleSheet,
@@ -23,6 +26,9 @@ const INACTIVE_OPACITY = 0.5;
 /** Glyphs drawn by the tab bar (the toolbar adds `neurology` to the same subset). */
 const TAB_SYMBOLS: SymbolName[] = ['airwave', 'explore_nearby', 'comic_bubble'];
 
+/** Tab order used to determine slide direction. */
+const TAB_ORDER = ['telemetry', 'community', 'chats', 'profile'] as const;
+
 /** GitHub-style identicon standing in for the signed-in profile. */
 const AVATAR = require('../../assets/images/avatar-identicon.png');
 /** Desaturated copy, used while the tab is inactive. */
@@ -40,6 +46,12 @@ type TabIconProps = Omit<PressableProps, 'children'> & {
   /** Injected by `TabTrigger` via `asChild`. */
   isFocused?: boolean;
 };
+
+function tabIndexFromPathname(pathname: string) {
+  const segment = pathname.replace(/^\//, '').split('/')[0];
+  const index = TAB_ORDER.indexOf(segment as (typeof TAB_ORDER)[number]);
+  return index === -1 ? 0 : index;
+}
 
 const TabIcon = forwardRef<ComponentRef<typeof View>, TabIconProps>(function TabIcon(
   { icon, avatar = false, label, ready = true, isFocused, style, ...rest },
@@ -86,10 +98,39 @@ const TabIcon = forwardRef<ComponentRef<typeof View>, TabIconProps>(function Tab
 export default function AppTabs() {
   const fontReady = useSymbolFont(TAB_SYMBOLS, ICON_SIZE);
   const theme = useTheme();
+  const pathname = usePathname();
+  const index = tabIndexFromPathname(pathname);
+  const previousIndex = useRef(index);
+  const translateX = useRef(new Animated.Value(0)).current;
+  const [width, setWidth] = useState(0);
+
+  useEffect(() => {
+    if (previousIndex.current === index || width === 0) {
+      previousIndex.current = index;
+      return;
+    }
+
+    const direction = index > previousIndex.current ? 1 : -1;
+    previousIndex.current = index;
+    translateX.setValue(direction * width);
+    Animated.timing(translateX, {
+      toValue: 0,
+      duration: 220,
+      easing: Easing.out(Easing.cubic),
+      useNativeDriver: true,
+    }).start();
+  }, [index, translateX, width]);
 
   return (
     <Tabs>
-      <TabSlot style={styles.slot} />
+      <Animated.View
+        style={[styles.slotWrap, { transform: [{ translateX }] }]}
+        onLayout={(event) => {
+          const next = event.nativeEvent.layout.width;
+          setWidth((current) => (Math.abs(current - next) < 0.5 ? current : next));
+        }}>
+        <TabSlot style={styles.slot} />
+      </Animated.View>
       <TabList style={[styles.tabList, { backgroundColor: theme.secondary } as ViewStyle]}>
         <TabTrigger name="telemetry" href="/telemetry" asChild>
           <TabIcon icon="airwave" label="Telemetry" ready={fontReady} />
@@ -112,7 +153,12 @@ export default function AppTabs() {
 }
 
 const styles = StyleSheet.create({
+  slotWrap: {
+    flex: 1,
+    minHeight: 0,
+  },
   slot: {
+    flex: 1,
     // `TabSlot` defaults to `flexShrink: 0`, so a tall screen (like the
     // telemetry dashboard) pushes the tab bar past the bottom of the viewport.
     flexShrink: 1,

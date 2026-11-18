@@ -2,15 +2,17 @@ import { usePathname } from 'expo-router';
 import { StyleSheet, Text, View } from 'react-native';
 
 import { currentTabLabel } from '@/components/app-toolbar-label';
-import { CardLayout, MaxContentWidth, StrokeWidth } from '@/constants/theme';
+import { VoxLogo } from '@/components/vox-logo';
+import { CardLayout, MaxContentWidth, Spacing, StrokeWidth } from '@/constants/theme';
 import { useTheme } from '@/hooks/use-theme';
 
+const ICON_SIZE = 30;
 const TOOLBAR_HEIGHT = 50;
 const TOOLBAR_PADDING = 5;
 
 /**
- * Top toolbar shared by the four main tabs: shows the name of the tab that is
- * currently open, centered.
+ * Top toolbar shared by the four main tabs: the VoxBCI logo plus the name of
+ * the tab that is currently open.
  *
  * It is as wide as the cards underneath: the same `CardLayout.gutter` on both
  * sides and the same `MaxContentWidth` cap. Square corners, no margin and only
@@ -19,21 +21,16 @@ const TOOLBAR_PADDING = 5;
 export function AppToolbar() {
   const pathname = usePathname();
   const theme = useTheme();
-  const isCommunity = pathname === '/community';
 
   return (
-    <View style={[styles.frame, isCommunity && { backgroundColor: theme.accent }]}>
+    <View style={styles.frame}>
       <View
         style={[
           styles.toolbar,
-          {
-            backgroundColor: isCommunity ? theme.accent : theme.background,
-            borderBottomColor: theme.secondary,
-          },
+          { backgroundColor: theme.background, borderBottomColor: theme.secondary },
         ]}>
-        <Text
-          accessibilityRole="header"
-          style={[styles.label, { color: isCommunity ? '#FFFFFF' : theme.text }]}>
+        <VoxLogo size={ICON_SIZE} />
+        <Text accessibilityRole="header" style={[styles.label, { color: theme.text }]}>
           {currentTabLabel(pathname)}
         </Text>
       </View>
@@ -56,7 +53,7 @@ const styles = StyleSheet.create({
     height: TOOLBAR_HEIGHT,
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'center',
+    gap: Spacing.two,
     padding: TOOLBAR_PADDING,
     // Header rule: square corners and a bottom outline only.
     borderRadius: 0,

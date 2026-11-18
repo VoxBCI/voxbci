@@ -2,17 +2,15 @@ import { usePathname } from 'expo-router';
 import { StyleSheet, Text, View } from 'react-native';
 
 import { currentTabLabel } from '@/components/app-toolbar-label';
-import { VoxLogo } from '@/components/vox-logo';
 import { CardLayout, MaxContentWidth, StrokeWidth } from '@/constants/theme';
 import { useTheme } from '@/hooks/use-theme';
 
-const ICON_SIZE = 30;
 const TOOLBAR_HEIGHT = 50;
 const TOOLBAR_PADDING = 5;
 
 /**
- * Top toolbar shared by the four main tabs. Telemetry shows the logo; other
- * tabs show the current tab name, centered.
+ * Top toolbar shared by the four main tabs: shows the name of the tab that is
+ * currently open, centered.
  *
  * It is as wide as the cards underneath: the same `CardLayout.gutter` on both
  * sides and the same `MaxContentWidth` cap. Square corners, no margin and only
@@ -22,7 +20,6 @@ export function AppToolbar() {
   const pathname = usePathname();
   const theme = useTheme();
   const isCommunity = pathname === '/community';
-  const isTelemetry = pathname === '/telemetry';
 
   return (
     <View style={[styles.frame, isCommunity && { backgroundColor: theme.accent }]}>
@@ -34,15 +31,11 @@ export function AppToolbar() {
             borderBottomColor: theme.secondary,
           },
         ]}>
-        {isTelemetry ? (
-          <VoxLogo size={ICON_SIZE} />
-        ) : (
-          <Text
-            accessibilityRole="header"
-            style={[styles.label, { color: isCommunity ? '#FFFFFF' : theme.text }]}>
-            {currentTabLabel(pathname)}
-          </Text>
-        )}
+        <Text
+          accessibilityRole="header"
+          style={[styles.label, { color: isCommunity ? '#FFFFFF' : theme.text }]}>
+          {currentTabLabel(pathname)}
+        </Text>
       </View>
     </View>
   );

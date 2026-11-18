@@ -21,16 +21,22 @@ const TOOLBAR_PADDING = 5;
 export function AppToolbar() {
   const pathname = usePathname();
   const theme = useTheme();
+  const isCommunity = pathname === '/community';
 
   return (
     <View style={styles.frame}>
       <View
         style={[
           styles.toolbar,
-          { backgroundColor: theme.background, borderBottomColor: theme.secondary },
+          {
+            backgroundColor: isCommunity ? theme.accent : theme.background,
+            borderBottomColor: theme.secondary,
+          },
         ]}>
         <VoxLogo size={ICON_SIZE} />
-        <Text accessibilityRole="header" style={[styles.label, { color: theme.text }]}>
+        <Text
+          accessibilityRole="header"
+          style={[styles.label, { color: isCommunity ? '#FFFFFF' : theme.text }]}>
           {currentTabLabel(pathname)}
         </Text>
       </View>

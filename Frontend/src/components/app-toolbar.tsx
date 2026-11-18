@@ -24,7 +24,7 @@ export function AppToolbar() {
   const isCommunity = pathname === '/community';
 
   return (
-    <View style={styles.frame}>
+    <View style={[styles.frame, isCommunity && { backgroundColor: theme.accent }]}>
       <View
         style={[
           styles.toolbar,

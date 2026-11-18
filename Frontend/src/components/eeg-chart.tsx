@@ -13,10 +13,11 @@ import {
 } from '@/data/eeg';
 import { useThemeScheme } from '@/hooks/use-theme';
 
-const ROW_HEIGHT = 56;
+const ROW_HEIGHT = 68;
 const TOP_PADDING = 10;
 const AXIS_HEIGHT = 24;
-const GUTTER = 54;
+/** Fits the 40px channel labels ("CH 01"). */
+const GUTTER = 132;
 const RIGHT_PADDING = 12;
 
 /**
@@ -139,7 +140,7 @@ function TimeAxis({ width, palette }: { width: number; palette: Palette }) {
 
 function Trace({ trace, row, width }: { trace: EegTrace; row: number; width: number }) {
   const { channel, samples } = trace;
-  const halfHeight = (ROW_HEIGHT - 14) / 2;
+  const halfHeight = (ROW_HEIGHT - 10) / 2;
   const centerY = TOP_PADDING + row * ROW_HEIGHT + ROW_HEIGHT / 2;
   const path = tracePath(samples, width, centerY, halfHeight, channel.range);
   const last = samples[samples.length - 1];
@@ -251,20 +252,20 @@ export function EegChart() {
                 />
                 <SvgText
                   x={0}
-                  y={top + ROW_HEIGHT / 2 - 4}
+                  y={top + ROW_HEIGHT / 2 + 4}
                   fill={palette.labelInk[channel.id] ?? channel.color}
                   fontFamily={MONO}
-                  fontSize={10}
+                  fontSize={40}
                   fontWeight="700"
                   textAnchor="start">
                   {channel.id}
                 </SvgText>
                 <SvgText
                   x={0}
-                  y={top + ROW_HEIGHT / 2 + 11}
+                  y={top + ROW_HEIGHT / 2 + 30}
                   fill={palette.muted}
                   fontFamily={MONO}
-                  fontSize={8.5}
+                  fontSize={9}
                   textAnchor="start">
                   {`±${channel.range} µV`}
                 </SvgText>

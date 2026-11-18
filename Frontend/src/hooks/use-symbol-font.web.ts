@@ -4,11 +4,11 @@ import { useEffect, useState } from 'react';
 /**
  * Google Material Symbols glyph names available in the bundled subset.
  *
- * `airwave`, `explore_nearby` and `comic_bubble` only exist in the newer
- * Material Symbols set (https://fonts.google.com/icons) — the Material Icons
- * font bundled with `@expo/vector-icons` has no such glyphs.
+ * `airwave`, `explore_nearby`, `comic_bubble` and `content_copy` only exist in
+ * the newer Material Symbols set (https://fonts.google.com/icons) — the Material
+ * Icons font bundled with `@expo/vector-icons` has no such glyphs.
  */
-export type SymbolName = 'airwave' | 'explore_nearby' | 'comic_bubble';
+export type SymbolName = 'airwave' | 'explore_nearby' | 'comic_bubble' | 'content_copy';
 
 /** CSS family the tab bar glyphs and the toolbar glyph share. */
 export const SYMBOL_FONT_FAMILY = 'VoxMaterialSymbols';

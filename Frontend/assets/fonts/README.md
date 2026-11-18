@@ -1,15 +1,16 @@
 # Material Symbols subset
 
-`material-symbols-outlined-subset.woff2` is a 3-glyph subset of
-[Material Symbols Outlined](https://fonts.google.com/icons), used by the web tab
-bar (`src/components/app-tabs.web.tsx`). The font renders icon names as
-ligatures, so the tab bar renders the text `airwave`, `explore_nearby` and
-`comic_bubble` as icons.
+`material-symbols-outlined-subset.woff2` is a subset of
+[Material Symbols Outlined](https://fonts.google.com/icons), used by the web
+tab bar and telemetry result actions (`src/components/app-tabs.web.tsx`,
+`src/app/(main)/telemetry.tsx`). The font renders icon names as ligatures, so
+the UI renders the text `airwave`, `explore_nearby`, `comic_bubble` and
+`content_copy` as icons.
 
 It was downloaded from Google Fonts with this request:
 
 ```
-https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0&icon_names=airwave,explore_nearby,comic_bubble
+https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0&icon_names=airwave,explore_nearby,comic_bubble,content_copy
 ```
 
 Send a Chrome user agent to get the `woff2` variant of the CSS, then download

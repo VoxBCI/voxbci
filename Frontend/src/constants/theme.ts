@@ -112,6 +112,21 @@ export const CardLayout = {
 } as const;
 
 /**
+ * Geometry of the floating pill that sits at the bottom of the screen. Shared
+ * by the tab bar and the auth screen's CTA so both line up exactly.
+ */
+export const FloatingPill = {
+  /** Gap between the pill and the bottom edge. */
+  inset: 20,
+  /** Width as a share of the viewport on phones. */
+  width: '88%',
+  /** Cap on wide screens. */
+  maxWidth: 340,
+  /** 52px of content plus 4px of vertical padding on each side. */
+  height: 60,
+} as const;
+
+/**
  * Component-surface rule: panels, cards and inputs are filled with the page
  * colour (`background`) and outlined with `secondary`. The floating tab bar is
  * the exception — it keeps the `secondary` fill.

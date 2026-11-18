@@ -3,8 +3,12 @@ import { Pressable, StyleSheet } from 'react-native';
 
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
-import { Radius, Spacing, StrokeWidth } from '@/constants/theme';
+import { FloatingPill, Radius, Spacing, StrokeWidth } from '@/constants/theme';
 import { useTheme } from '@/hooks/use-theme';
+
+/** The CTA is white with black type in both palettes, like the Google button. */
+const BUTTON_BACKGROUND = '#FFFFFF';
+const BUTTON_TEXT = '#000000';
 
 export default function AuthScreen() {
   const theme = useTheme();
@@ -17,16 +21,19 @@ export default function AuthScreen() {
       </ThemedText>
 
       <Pressable
+        accessibilityRole="button"
         onPress={() => router.replace('/telemetry')}
         style={({ pressed }) => [
           styles.button,
           {
-            backgroundColor: theme.background,
+            backgroundColor: BUTTON_BACKGROUND,
             borderColor: theme.secondary,
             opacity: pressed ? 0.8 : 1,
           },
         ]}>
-        <ThemedText style={styles.buttonLabel}>Continue</ThemedText>
+        <ThemedText style={[styles.buttonLabel, { color: BUTTON_TEXT }]}>
+          Continue with Google
+        </ThemedText>
       </Pressable>
     </ThemedView>
   );
@@ -43,10 +50,18 @@ const styles = StyleSheet.create({
   subtitle: {
     textAlign: 'center',
   },
+  /** Same footprint and position as the floating tab bar. */
   button: {
-    marginTop: Spacing.two,
-    paddingVertical: Spacing.two + Spacing.one,
-    paddingHorizontal: Spacing.five,
+    position: 'absolute',
+    bottom: FloatingPill.inset,
+    left: 0,
+    right: 0,
+    width: FloatingPill.width,
+    maxWidth: FloatingPill.maxWidth,
+    height: FloatingPill.height,
+    marginHorizontal: 'auto',
+    alignItems: 'center',
+    justifyContent: 'center',
     borderRadius: Radius.pill,
     borderWidth: StrokeWidth,
   },

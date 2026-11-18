@@ -11,13 +11,11 @@ import {
   View,
 } from 'react-native';
 
-import { Radius, Spacing } from '@/constants/theme';
+import { FloatingPill, Radius, Spacing } from '@/constants/theme';
 import { SYMBOL_FONT_FAMILY, useSymbolFont, type SymbolName } from '@/hooks/use-symbol-font.web';
 import { useTheme } from '@/hooks/use-theme';
 
 const ICON_SIZE = 26;
-const BAR_INSET = 20;
-const BAR_MAX_WIDTH = 340;
 
 /** Inactive tabs are dimmed to half opacity; the active tab is solid. */
 const INACTIVE_OPACITY = 0.5;
@@ -122,14 +120,15 @@ const styles = StyleSheet.create({
   },
   tabList: {
     position: 'absolute',
-    bottom: BAR_INSET,
+    bottom: FloatingPill.inset,
     // `left: 0` + `right: 0` + auto margins centre the pill, so the gutter on
     // each side is identical at every viewport width.
     left: 0,
     right: 0,
-    width: '88%',
-    maxWidth: BAR_MAX_WIDTH,
+    width: FloatingPill.width,
+    maxWidth: FloatingPill.maxWidth,
     marginHorizontal: 'auto',
+    height: FloatingPill.height,
     flexDirection: 'row',
     alignItems: 'center',
     paddingVertical: Spacing.one,

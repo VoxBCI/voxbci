@@ -3,7 +3,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { StyleSheet, Text, View, useWindowDimensions, type LayoutChangeEvent } from 'react-native';
 import Svg, { Circle, G, Line, Path, Text as SvgText } from 'react-native-svg';
 
-import { CardLayout, Fonts, MaxContentWidth, Radius, Spacing, StrokeWidth } from '@/constants/theme';
+import { CardLayout, Fonts, MaxContentWidth, Radius, Spacing } from '@/constants/theme';
 import {
   buildEegFrame,
   EEG_CHANNELS,
@@ -234,7 +234,7 @@ export function EegChart() {
       accessibilityLabel={`Five simulated EEG channels on a ${EEG_WINDOW_SECONDS} second rolling window, sampled at ${EEG_SAMPLE_RATE} hertz.`}
       style={[
         styles.card,
-        { backgroundColor: palette.background, borderColor: palette.border },
+        { backgroundColor: palette.background },
       ]}>
       <View onLayout={onLayout} style={styles.plotArea}>
         <Svg width="100%" height={SVG_HEIGHT} viewBox={`0 0 ${svgWidth} ${SVG_HEIGHT}`}>
@@ -313,7 +313,6 @@ export function EegChart() {
 const styles = StyleSheet.create({
   card: {
     width: '100%',
-    borderWidth: StrokeWidth,
     borderRadius: Radius.lg,
     padding: Spacing.three,
     gap: Spacing.three,

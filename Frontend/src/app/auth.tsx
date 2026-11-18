@@ -24,7 +24,7 @@ export default function AuthScreen() {
       {/* Footnote + CTA share the tab bar's footprint at the bottom edge. */}
       <View style={styles.bottomArea}>
         <ThemedText themeColor="textSecondary" style={styles.subtitle}>
-          Sign in placeholder — no backend wired up yet.
+          No headset detected
         </ThemedText>
 
         <Pressable

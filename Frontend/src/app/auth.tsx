@@ -1,9 +1,9 @@
 import { router } from 'expo-router';
-import { Pressable, StyleSheet } from 'react-native';
+import { Pressable, StyleSheet, View } from 'react-native';
 
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
-import { FloatingPill, Radius, Spacing, StrokeWidth } from '@/constants/theme';
+import { FloatingPill, Radius, Spacing } from '@/constants/theme';
 import { useTheme } from '@/hooks/use-theme';
 
 /** The CTA is white with black type in both palettes, like the Google button. */
@@ -15,6 +15,12 @@ export default function AuthScreen() {
 
   return (
     <ThemedView style={styles.container}>
+      {/* Lower half of the screen uses the raised-surface colour. */}
+      <View
+        pointerEvents="none"
+        style={[styles.bottomHalf, { backgroundColor: theme.secondary }]}
+      />
+
       <ThemedText type="subtitle">Welcome back</ThemedText>
       <ThemedText themeColor="textSecondary" style={styles.subtitle}>
         Sign in placeholder — no backend wired up yet.
@@ -27,7 +33,6 @@ export default function AuthScreen() {
           styles.button,
           {
             backgroundColor: BUTTON_BACKGROUND,
-            borderColor: theme.secondary,
             opacity: pressed ? 0.8 : 1,
           },
         ]}>
@@ -50,6 +55,14 @@ const styles = StyleSheet.create({
   subtitle: {
     textAlign: 'center',
   },
+  /** 50vh to 100vh: the tinted panel the CTA floats on. */
+  bottomHalf: {
+    position: 'absolute',
+    top: '50%',
+    left: 0,
+    right: 0,
+    bottom: 0,
+  },
   /** Same footprint and position as the floating tab bar. */
   button: {
     position: 'absolute',
@@ -63,7 +76,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     borderRadius: Radius.pill,
-    borderWidth: StrokeWidth,
   },
   buttonLabel: {
     fontWeight: '600',

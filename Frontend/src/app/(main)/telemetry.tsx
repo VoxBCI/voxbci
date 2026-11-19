@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import {
+  ActivityIndicator,
   FlatList,
   Platform,
   Pressable,
@@ -157,12 +158,15 @@ function ReadingCard({
   );
 }
 
+type TelemetryState = 'idle' | 'streaming';
+
 export default function TelemetryScreen() {
   const theme = useTheme();
   const scheme = useThemeScheme();
   const listData = useMemo(() => DUMMY_READINGS, []);
   const copyReady = useSymbolFont(['content_copy'], 20);
   const [activeIndex, setActiveIndex] = useState(0);
+  const [telemetryState] = useState<TelemetryState>('idle');
   const logsColor = scheme === 'dark' ? '#4DA3FF' : theme.accent;
 
   const viewabilityConfig = useRef({ itemVisiblePercentThreshold: 60 }).current;
@@ -187,7 +191,17 @@ export default function TelemetryScreen() {
           contentContainerStyle={styles.chartScrollContent}
           showsVerticalScrollIndicator={false}>
           <View style={styles.chartContent}>
-            <EegChart />
+            <View style={styles.chartWrap}>
+              <EegChart streaming={telemetryState === 'streaming'} />
+              {telemetryState === 'idle' ? (
+                <View style={styles.chartOverlay} pointerEvents="none">
+                  <View style={styles.searchRow}>
+                    <ThemedText type="smallBold">Searching for headset</ThemedText>
+                    <ActivityIndicator size="small" color={theme.text} />
+                  </View>
+                </View>
+              ) : null}
+            </View>
           </View>
         </ScrollView>
       </View>
@@ -237,6 +251,23 @@ const styles = StyleSheet.create({
     width: '100%',
     maxWidth: MaxContentWidth,
     alignSelf: 'center',
+  },
+  chartWrap: {
+    position: 'relative',
+  },
+  chartOverlay: {
+    position: 'absolute',
+    top: 0,
+    right: 0,
+    bottom: 0,
+    left: 0,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  searchRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: Spacing.two,
   },
   stickyHeader: {
     width: '100%',

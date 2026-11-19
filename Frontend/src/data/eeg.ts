@@ -216,3 +216,15 @@ export function buildEegFrame(elapsedSeconds: number): EegTrace[] {
     return { channel, samples };
   });
 }
+
+/**
+ * Flat baseline frame used before a headset stream is active.
+ */
+export function buildFlatEegFrame(): EegTrace[] {
+  const sampleCount = EEG_WINDOW_SECONDS * EEG_SAMPLE_RATE + 1;
+
+  return EEG_CHANNELS.map((channel) => ({
+    channel,
+    samples: new Array<number>(sampleCount).fill(0),
+  }));
+}

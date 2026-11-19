@@ -6,6 +6,7 @@ import Svg, { Circle, G, Line, Path, Text as SvgText } from 'react-native-svg';
 import { CardLayout, Fonts, MaxContentWidth, Radius, Spacing } from '@/constants/theme';
 import {
   buildEegFrame,
+  buildFlatEegFrame,
   EEG_CHANNELS,
   EEG_SAMPLE_RATE,
   EEG_WINDOW_SECONDS,
@@ -183,9 +184,10 @@ function Trace({ trace, row, width }: { trace: EegTrace; row: number; width: num
   );
 }
 
-export function EegChart() {
+export function EegChart({ streaming = false }: { streaming?: boolean }) {
   const pathname = usePathname();
-  const active = pathname === '/telemetry';
+  const onTelemetry = pathname === '/telemetry';
+  const active = onTelemetry && streaming;
   const palette = PALETTES[useThemeScheme()];
   const { width: viewportWidth } = useWindowDimensions();
   const [elapsed, setElapsed] = useState(0);
@@ -201,7 +203,10 @@ export function EegChart() {
     return () => clearInterval(id);
   }, [active]);
 
-  const frame = useMemo(() => buildEegFrame(elapsed), [elapsed]);
+  const frame = useMemo(
+    () => (streaming ? buildEegFrame(elapsed) : buildFlatEegFrame()),
+    [elapsed, streaming],
+  );
 
   // `onLayout` is unreliable during web hydration, so derive a width from the
   // viewport (same padding/max-width as the screen) and let the measured value
@@ -231,10 +236,14 @@ export function EegChart() {
   return (
     <View
       accessible
-      accessibilityLabel={`Five simulated EEG channels on a ${EEG_WINDOW_SECONDS} second rolling window, sampled at ${EEG_SAMPLE_RATE} hertz.`}
+      accessibilityLabel={
+        streaming
+          ? `Five simulated EEG channels on a ${EEG_WINDOW_SECONDS} second rolling window, sampled at ${EEG_SAMPLE_RATE} hertz.`
+          : 'EEG telemetry idle with flat baseline traces.'
+      }
       style={[
         styles.card,
-        { backgroundColor: palette.background },
+        { backgroundColor: palette.background, opacity: streaming ? 1 : 0.5 },
       ]}>
       <View onLayout={onLayout} style={styles.plotArea}>
         <Svg width="100%" height={SVG_HEIGHT} viewBox={`0 0 ${svgWidth} ${SVG_HEIGHT}`}>

@@ -1,3 +1,4 @@
+import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import { usePathname } from 'expo-router';
 import { StyleSheet, Text, View } from 'react-native';
 
@@ -29,6 +30,11 @@ export function AppToolbar() {
           styles.toolbar,
           { backgroundColor: theme.background, borderBottomColor: theme.secondary },
         ]}>
+        <View style={styles.pairHeadset}>
+          <MaterialIcons name="settings-bluetooth" size={20} color={theme.text} />
+          <Text style={[styles.pairLabel, { color: theme.text }]}>Pair headset</Text>
+        </View>
+
         <VoxLogo size={ICON_SIZE} />
         <Text accessibilityRole="header" style={[styles.label, { color: theme.text }]}>
           {currentTabLabel(pathname)}
@@ -58,6 +64,15 @@ const styles = StyleSheet.create({
     // Header rule: square corners and a bottom outline only.
     borderRadius: 0,
     borderBottomWidth: StrokeWidth,
+  },
+  pairHeadset: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: Spacing.one,
+  },
+  pairLabel: {
+    fontSize: 12,
+    fontWeight: '600',
   },
   label: {
     fontSize: 16,

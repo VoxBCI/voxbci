@@ -4,7 +4,12 @@
  * The web implementation loads a subset woff2 font; native falls back to
  * platform glyphs/text where needed.
  */
-export type SymbolName = 'airwave' | 'explore_nearby' | 'comic_bubble' | 'content_copy';
+export type SymbolName =
+  | 'airwave'
+  | 'explore_nearby'
+  | 'comic_bubble'
+  | 'content_copy'
+  | 'settings_bluetooth';
 
 /** CSS family the web glyphs use. */
 export const SYMBOL_FONT_FAMILY = 'VoxMaterialSymbols';

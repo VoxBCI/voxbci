@@ -4,11 +4,13 @@ import { StyleSheet, Text, View } from 'react-native';
 import { currentTabLabel } from '@/components/app-toolbar-label';
 import { VoxLogo } from '@/components/vox-logo';
 import { CardLayout, MaxContentWidth, Spacing, StrokeWidth } from '@/constants/theme';
+import { SYMBOL_FONT_FAMILY, useSymbolFont } from '@/hooks/use-symbol-font.web';
 import { useTheme } from '@/hooks/use-theme';
 
 const ICON_SIZE = 30;
 const TOOLBAR_HEIGHT = 50;
 const TOOLBAR_PADDING = 5;
+const PAIR_ICON = 'settings_bluetooth';
 
 /**
  * Top toolbar shared by the four main tabs: the VoxBCI logo plus the name of
@@ -21,6 +23,7 @@ const TOOLBAR_PADDING = 5;
 export function AppToolbar() {
   const pathname = usePathname();
   const theme = useTheme();
+  const iconReady = useSymbolFont([PAIR_ICON], 20);
 
   return (
     <View style={styles.frame}>
@@ -29,6 +32,19 @@ export function AppToolbar() {
           styles.toolbar,
           { backgroundColor: theme.background, borderBottomColor: theme.secondary },
         ]}>
+        <View style={styles.pairHeadset}>
+          <Text
+            aria-hidden
+            selectable={false}
+            style={[
+              styles.pairIcon,
+              { color: theme.text, opacity: iconReady ? 1 : 0, fontFamily: SYMBOL_FONT_FAMILY },
+            ]}>
+            {PAIR_ICON}
+          </Text>
+          <Text style={[styles.pairLabel, { color: theme.text }]}>Pair headset</Text>
+        </View>
+
         <VoxLogo size={ICON_SIZE} />
         <Text accessibilityRole="header" style={[styles.label, { color: theme.text }]}>
           {currentTabLabel(pathname)}
@@ -58,6 +74,19 @@ const styles = StyleSheet.create({
     // Header rule: square corners and a bottom outline only.
     borderRadius: 0,
     borderBottomWidth: StrokeWidth,
+  },
+  pairHeadset: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: Spacing.one,
+  },
+  pairIcon: {
+    fontSize: 20,
+    lineHeight: 20,
+  },
+  pairLabel: {
+    fontSize: 12,
+    fontWeight: '600',
   },
   label: {
     fontSize: 16,

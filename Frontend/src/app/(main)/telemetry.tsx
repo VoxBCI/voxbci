@@ -99,18 +99,6 @@ function LoadingCard({
           nestedScrollEnabled>
           {devices.map((device) => (
             <View key={device.id} style={styles.deviceRow}>
-              <Pressable
-                accessibilityRole="button"
-                accessibilityLabel={`Connect to ${device.name}`}
-                onPress={() => onConnect(device)}
-                style={({ pressed }) => [
-                  styles.connectButton,
-                  { opacity: pressed ? 0.85 : 1 },
-                ]}>
-                <ThemedText type="smallBold" style={styles.connectLabel}>
-                  Connect
-                </ThemedText>
-              </Pressable>
               <View style={styles.deviceInfo}>
                 <ThemedText type="smallBold" style={styles.whiteText} numberOfLines={1}>
                   {device.name}
@@ -125,6 +113,18 @@ function LoadingCard({
                   {device.id}
                 </Text>
               </View>
+              <Pressable
+                accessibilityRole="button"
+                accessibilityLabel={`Connect to ${device.name}`}
+                onPress={() => onConnect(device)}
+                style={({ pressed }) => [
+                  styles.connectButton,
+                  { opacity: pressed ? 0.85 : 1 },
+                ]}>
+                <ThemedText type="smallBold" style={styles.connectLabel}>
+                  Connect
+                </ThemedText>
+              </Pressable>
             </View>
           ))}
         </ScrollView>
@@ -392,12 +392,14 @@ const styles = StyleSheet.create({
     height: 36,
     paddingHorizontal: Spacing.three,
     borderRadius: Radius.pill,
-    backgroundColor: '#FFFFFF',
+    backgroundColor: 'transparent',
+    borderWidth: 1,
+    borderColor: '#FFFFFF',
     alignItems: 'center',
     justifyContent: 'center',
   },
   connectLabel: {
-    color: '#000000',
+    color: '#FFFFFF',
   },
   deviceInfo: {
     flex: 1,

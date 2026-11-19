@@ -1,5 +1,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import {
+  Animated,
+  Easing,
   FlatList,
   Platform,
   Pressable,
@@ -7,15 +9,20 @@ import {
   StyleSheet,
   Text,
   View,
-  useWindowDimensions,
-  type LayoutChangeEvent,
 } from 'react-native';
 
 import { EegChart } from '@/components/eeg-chart';
 import { OutlinedView } from '@/components/outlined-view';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
-import { CardLayout, Fonts, MaxContentWidth, Radius, Spacing } from '@/constants/theme';
+import {
+  CardLayout,
+  Fonts,
+  MaxContentWidth,
+  Radius,
+  Spacing,
+  StrokeWidth,
+} from '@/constants/theme';
 import { useTheme, useThemeScheme } from '@/hooks/use-theme';
 import { SYMBOL_FONT_FAMILY, useSymbolFont } from '@/hooks/use-symbol-font';
 
@@ -73,26 +80,53 @@ function LoadingCard({
   logsColor,
   connectedDevice,
   onConnect,
+  expansion,
 }: {
   state: TelemetryState;
   devices: HeadsetDevice[];
   logsColor: string;
   connectedDevice: HeadsetDevice | null;
   onConnect: (device: HeadsetDevice) => void;
+  /** Animated extra height of the discovered state, shared with the screen. */
+  expansion: Animated.Value;
 }) {
   const theme = useTheme();
   const dots = useTerminalLoading(state !== 'streaming');
+  const blueMode = state !== 'streaming';
+
+  // The card sits on the accent fill while searching / listing and falls back
+  // to the secondary surface once a headset is streaming.
+  const [colorMix] = useState(() => new Animated.Value(state === 'streaming' ? 0 : 1));
+
+  useEffect(() => {
+    Animated.timing(colorMix, {
+      toValue: blueMode ? 1 : 0,
+      duration: CARD_ANIMATION_MS,
+      easing: Easing.out(Easing.cubic),
+      useNativeDriver: false,
+    }).start();
+  }, [blueMode, colorMix]);
+
+  const backgroundColor = colorMix.interpolate({
+    inputRange: [0, 1],
+    outputRange: [theme.secondary, logsColor],
+  });
+  const foregroundColor = blueMode ? '#FFFFFF' : theme.text;
+  const secondaryColor = blueMode ? 'rgba(255, 255, 255, 0.72)' : theme.textSecondary;
+
+  const cardStyle = [
+    styles.card,
+    styles.animatedCard,
+    {
+      height: Animated.add(BASE_CARD_MIN_HEIGHT, expansion),
+      backgroundColor,
+      borderColor: theme.secondary,
+    },
+  ];
 
   if (state === 'discovered' && devices.length > 0) {
-    const expanded = devices.length > 4;
     return (
-      <OutlinedView
-        style={[
-          styles.card,
-          styles.discoveredCard,
-          expanded ? styles.cardExpanded : null,
-          { backgroundColor: logsColor },
-        ]}>
+      <Animated.View style={[...cardStyle, styles.discoveredCard]}>
         <ThemedText type="smallBold" style={styles.whiteText}>
           Available headsets
         </ThemedText>
@@ -132,18 +166,14 @@ function LoadingCard({
             </View>
           ))}
         </ScrollView>
-      </OutlinedView>
+      </Animated.View>
     );
   }
 
   const searching = state === 'searching';
-  const streaming = state === 'streaming';
-  const backgroundColor = searching ? logsColor : theme.secondary;
-  const foregroundColor = searching ? '#FFFFFF' : theme.text;
-  const secondaryColor = searching ? 'rgba(255, 255, 255, 0.72)' : theme.textSecondary;
 
   return (
-    <OutlinedView style={[styles.card, { backgroundColor }]}>
+    <Animated.View style={cardStyle}>
       <View style={styles.cardMain}>
         <ThemedText type="smallBold" style={{ color: foregroundColor }}>
           {searching ? 'Searching for headset' : 'Detecting intent'}
@@ -156,7 +186,7 @@ function LoadingCard({
           {dots}
         </Text>
       </View>
-      {streaming ? (
+      {state === 'streaming' ? (
         <View style={[styles.cardSide, styles.cardSideInfo]}>
           <ThemedText type="smallBold" style={{ color: foregroundColor }} numberOfLines={1}>
             {connectedDevice?.name ?? 'Connected headset'}
@@ -170,7 +200,7 @@ function LoadingCard({
           </Text>
         </View>
       ) : null}
-    </OutlinedView>
+    </Animated.View>
   );
 }
 
@@ -256,6 +286,23 @@ const DUMMY_HEADSETS: HeadsetDevice[] = [
 const BASE_CARD_MIN_HEIGHT = 76;
 const EXPANDED_CARD_MIN_HEIGHT = BASE_CARD_MIN_HEIGHT * 4;
 
+/** Shared duration of the card resize, the lower-half lift and the fill fade. */
+const CARD_ANIMATION_MS = 300;
+
+/** Height of one device row and of the card's title line. */
+const DEVICE_ROW_HEIGHT = 36;
+const CARD_TITLE_HEIGHT = 20;
+
+/**
+ * Natural height of the discovered card: four times the base card once the list
+ * overflows, otherwise only as tall as its rows.
+ */
+function expandedCardHeight(deviceCount: number) {
+  if (deviceCount > 4) return EXPANDED_CARD_MIN_HEIGHT;
+  const rows = deviceCount * DEVICE_ROW_HEIGHT + Math.max(0, deviceCount - 1) * Spacing.two;
+  return CARD_TITLE_HEIGHT + Spacing.two + rows + Spacing.three * 2 + StrokeWidth * 2;
+}
+
 export default function TelemetryScreen() {
   const theme = useTheme();
   const scheme = useThemeScheme();
@@ -266,10 +313,8 @@ export default function TelemetryScreen() {
   const [discoveredHeadsets, setDiscoveredHeadsets] = useState<HeadsetDevice[]>([]);
   const [connectedDevice, setConnectedDevice] = useState<HeadsetDevice | null>(null);
   const logsColor = scheme === 'dark' ? '#4DA3FF' : theme.accent;
-  const viewport = useWindowDimensions();
-  const [screenHeight, setScreenHeight] = useState(0);
-  const [cardHeight, setCardHeight] = useState(BASE_CARD_MIN_HEIGHT);
-  const collapsedCardHeight = useRef(BASE_CARD_MIN_HEIGHT);
+  /** Animated height the lower half gains while the headset list is open. */
+  const [expansion] = useState(() => new Animated.Value(0));
 
   useEffect(() => {
     if (telemetryState !== 'searching') return;
@@ -285,30 +330,25 @@ export default function TelemetryScreen() {
     setTelemetryState('streaming');
   };
 
-  /** The chart always owns the top half of the screen, at a fixed 50% height. */
-  const halfHeight = (screenHeight || viewport.height) / 2;
-
   /**
-   * How much taller the status card got when the headset list appeared. The
+   * How much taller the status card gets when the headset list appears. The
    * lower half absorbs that extra height and lifts by half of it, so the card
    * and logs stay centred instead of being pushed towards the bottom.
    */
-  const expansion =
-    telemetryState === 'discovered' ? Math.max(0, cardHeight - collapsedCardHeight.current) : 0;
+  const targetExpansion =
+    telemetryState === 'discovered' && discoveredHeadsets.length > 0
+      ? Math.max(0, expandedCardHeight(discoveredHeadsets.length) - BASE_CARD_MIN_HEIGHT)
+      : 0;
 
-  const onScreenLayout = useCallback((event: LayoutChangeEvent) => {
-    const next = event.nativeEvent.layout.height;
-    setScreenHeight((current) => (Math.abs(current - next) < 0.5 ? current : next));
-  }, []);
-
-  const onCardLayout = useCallback(
-    (event: LayoutChangeEvent) => {
-      const next = event.nativeEvent.layout.height;
-      setCardHeight(next);
-      if (telemetryState !== 'discovered') collapsedCardHeight.current = next;
-    },
-    [telemetryState],
-  );
+  useEffect(() => {
+    Animated.timing(expansion, {
+      toValue: targetExpansion,
+      duration: CARD_ANIMATION_MS,
+      easing: Easing.out(Easing.cubic),
+      useNativeDriver: false,
+      isInteraction: false,
+    }).start();
+  }, [expansion, targetExpansion]);
 
   const viewabilityConfig = useRef({ itemVisiblePercentThreshold: 60 }).current;
 
@@ -326,8 +366,8 @@ export default function TelemetryScreen() {
   );
 
   return (
-    <ThemedView style={styles.screen} onLayout={onScreenLayout}>
-      <View style={[styles.topHalf, { height: halfHeight }]}>
+    <ThemedView style={styles.screen}>
+      <View style={styles.topHalf}>
         <ScrollView
           contentContainerStyle={styles.chartScrollContent}
           showsVerticalScrollIndicator={false}>
@@ -337,21 +377,25 @@ export default function TelemetryScreen() {
         </ScrollView>
       </View>
 
-      <View
+      <Animated.View
         style={[
           styles.bottomHalf,
-          { height: halfHeight + expansion, marginTop: -expansion / 2 },
+          {
+            // Growing `bottom` past the screen edge adds the expansion to the
+            // lower half's height without touching the fixed top half.
+            bottom: Animated.multiply(expansion, -1),
+            transform: [{ translateY: Animated.multiply(expansion, -0.5) }],
+          },
         ]}>
         <View style={styles.stickyHeader}>
-          <View onLayout={onCardLayout}>
-            <LoadingCard
-              state={telemetryState}
-              devices={discoveredHeadsets}
-              logsColor={logsColor}
-              connectedDevice={connectedDevice}
-              onConnect={onConnect}
-            />
-          </View>
+          <LoadingCard
+            state={telemetryState}
+            devices={discoveredHeadsets}
+            logsColor={logsColor}
+            connectedDevice={connectedDevice}
+            onConnect={onConnect}
+            expansion={expansion}
+          />
         </View>
         <FlatList
           data={listData}
@@ -365,7 +409,7 @@ export default function TelemetryScreen() {
           onViewableItemsChanged={onViewableItemsChanged}
           viewabilityConfig={viewabilityConfig}
         />
-      </View>
+      </Animated.View>
     </ThemedView>
   );
 }
@@ -373,17 +417,19 @@ export default function TelemetryScreen() {
 const styles = StyleSheet.create({
   screen: {
     flex: 1,
+    position: 'relative',
     // The lower half grows past the bottom edge when the headset list appears.
     overflow: 'hidden',
   },
   topHalf: {
-    flexGrow: 0,
-    flexShrink: 0,
+    height: '50%',
     minHeight: 0,
   },
   bottomHalf: {
-    flexGrow: 0,
-    flexShrink: 0,
+    position: 'absolute',
+    top: '50%',
+    left: 0,
+    right: 0,
     minHeight: 0,
   },
   chartScrollContent: {
@@ -421,8 +467,10 @@ const styles = StyleSheet.create({
     borderRadius: Radius.md,
     padding: Spacing.three,
   },
-  cardExpanded: {
-    minHeight: EXPANDED_CARD_MIN_HEIGHT,
+  animatedCard: {
+    borderWidth: StrokeWidth,
+    // Clips the device list while the card grows back into its compact height.
+    overflow: 'hidden',
   },
   discoveredCard: {
     flexDirection: 'column',

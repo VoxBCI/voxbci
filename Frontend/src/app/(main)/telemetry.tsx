@@ -1,6 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import {
-  ActivityIndicator,
   FlatList,
   Platform,
   Pressable,
@@ -66,27 +65,99 @@ async function copyText(value: string) {
   // Fallback: best-effort no-op on platforms without clipboard access wired up.
 }
 
-function LoadingCard() {
+function LoadingCard({
+  state,
+  devices,
+  logsColor,
+  onConnect,
+}: {
+  state: TelemetryState;
+  devices: HeadsetDevice[];
+  logsColor: string;
+  onConnect: (device: HeadsetDevice) => void;
+}) {
   const theme = useTheme();
-  const dots = useTerminalLoading(true);
+  const dots = useTerminalLoading(state !== 'streaming');
+
+  if (state === 'discovered' && devices.length > 0) {
+    const expanded = devices.length > 4;
+    return (
+      <OutlinedView
+        style={[
+          styles.card,
+          styles.discoveredCard,
+          expanded ? styles.cardExpanded : null,
+          { backgroundColor: logsColor },
+        ]}>
+        <ThemedText type="smallBold" style={styles.whiteText}>
+          Available headsets
+        </ThemedText>
+        <ScrollView
+          style={styles.deviceList}
+          contentContainerStyle={styles.deviceListContent}
+          showsVerticalScrollIndicator={false}
+          nestedScrollEnabled>
+          {devices.map((device) => (
+            <View key={device.id} style={styles.deviceRow}>
+              <Pressable
+                accessibilityRole="button"
+                accessibilityLabel={`Connect to ${device.name}`}
+                onPress={() => onConnect(device)}
+                style={({ pressed }) => [
+                  styles.connectButton,
+                  { opacity: pressed ? 0.85 : 1 },
+                ]}>
+                <ThemedText type="smallBold" style={styles.connectLabel}>
+                  Connect
+                </ThemedText>
+              </Pressable>
+              <View style={styles.deviceInfo}>
+                <ThemedText type="smallBold" style={styles.whiteText} numberOfLines={1}>
+                  {device.name}
+                </ThemedText>
+                <Text
+                  style={[
+                    styles.terminal,
+                    styles.whiteSecondary,
+                    { fontFamily: Fonts?.mono ?? 'monospace' },
+                  ]}
+                  numberOfLines={1}>
+                  {device.id}
+                </Text>
+              </View>
+            </View>
+          ))}
+        </ScrollView>
+      </OutlinedView>
+    );
+  }
+
+  const searching = state === 'searching';
+  const backgroundColor = searching ? logsColor : theme.secondary;
+  const foregroundColor = searching ? '#FFFFFF' : theme.text;
+  const secondaryColor = searching ? 'rgba(255, 255, 255, 0.72)' : theme.textSecondary;
 
   return (
-    <OutlinedView style={[styles.card, { backgroundColor: theme.secondary }]}>
+    <OutlinedView style={[styles.card, { backgroundColor }]}>
       <View style={styles.cardMain}>
-        <ThemedText type="smallBold">Detecting intent</ThemedText>
+        <ThemedText type="smallBold" style={{ color: foregroundColor }}>
+          {searching ? 'Searching for headset' : 'Detecting intent'}
+        </ThemedText>
         <Text
           style={[
             styles.terminal,
-            { color: theme.textSecondary, fontFamily: Fonts?.mono ?? 'monospace' },
+            { color: secondaryColor, fontFamily: Fonts?.mono ?? 'monospace' },
           ]}>
           {dots}
         </Text>
       </View>
-      <View style={styles.cardSide}>
-        <ThemedText type="small" themeColor="textSecondary">
-          live
-        </ThemedText>
-      </View>
+      {!searching ? (
+        <View style={styles.cardSide}>
+          <ThemedText type="small" style={{ color: secondaryColor }}>
+            live
+          </ThemedText>
+        </View>
+      ) : null}
     </OutlinedView>
   );
 }
@@ -158,7 +229,20 @@ function ReadingCard({
   );
 }
 
-type TelemetryState = 'idle' | 'streaming';
+type TelemetryState = 'searching' | 'discovered' | 'streaming';
+
+type HeadsetDevice = { id: string; name: string };
+
+const DUMMY_HEADSETS: HeadsetDevice[] = [
+  { id: 'VB-A1F3', name: 'VoxBCI Neuroband' },
+  { id: 'VB-B7C2', name: 'VoxBCI Neuroband Pro' },
+  { id: 'VB-C4D8', name: 'VoxBCI Lite' },
+  { id: 'VB-D9E1', name: 'VoxBCI Neuroband X' },
+  { id: 'VB-E2F6', name: 'VoxBCI Air' },
+];
+
+const BASE_CARD_MIN_HEIGHT = 76;
+const EXPANDED_CARD_MIN_HEIGHT = BASE_CARD_MIN_HEIGHT * 4;
 
 export default function TelemetryScreen() {
   const theme = useTheme();
@@ -166,8 +250,22 @@ export default function TelemetryScreen() {
   const listData = useMemo(() => DUMMY_READINGS, []);
   const copyReady = useSymbolFont(['content_copy'], 20);
   const [activeIndex, setActiveIndex] = useState(0);
-  const [telemetryState] = useState<TelemetryState>('idle');
+  const [telemetryState, setTelemetryState] = useState<TelemetryState>('searching');
+  const [discoveredHeadsets, setDiscoveredHeadsets] = useState<HeadsetDevice[]>([]);
   const logsColor = scheme === 'dark' ? '#4DA3FF' : theme.accent;
+
+  useEffect(() => {
+    if (telemetryState !== 'searching') return;
+    const id = setTimeout(() => {
+      setDiscoveredHeadsets(DUMMY_HEADSETS);
+      setTelemetryState('discovered');
+    }, 5000);
+    return () => clearTimeout(id);
+  }, [telemetryState]);
+
+  const onConnect = (_device: HeadsetDevice) => {
+    setTelemetryState('streaming');
+  };
 
   const viewabilityConfig = useRef({ itemVisiblePercentThreshold: 60 }).current;
 
@@ -191,26 +289,19 @@ export default function TelemetryScreen() {
           contentContainerStyle={styles.chartScrollContent}
           showsVerticalScrollIndicator={false}>
           <View style={styles.chartContent}>
-            <View style={styles.chartWrap}>
-              <EegChart streaming={telemetryState === 'streaming'} />
-              {telemetryState === 'idle' ? (
-                <View style={styles.chartOverlay} pointerEvents="none">
-                  <View style={styles.searchRow}>
-                    <ThemedText type="smallBold" style={[styles.searchText, { color: logsColor }]}>
-                      Searching for headset
-                    </ThemedText>
-                    <ActivityIndicator size="large" color={logsColor} />
-                  </View>
-                </View>
-              ) : null}
-            </View>
+            <EegChart streaming={telemetryState === 'streaming'} />
           </View>
         </ScrollView>
       </View>
 
       <View style={styles.bottomHalf}>
         <View style={styles.stickyHeader}>
-          <LoadingCard />
+          <LoadingCard
+            state={telemetryState}
+            devices={discoveredHeadsets}
+            logsColor={logsColor}
+            onConnect={onConnect}
+          />
         </View>
         <FlatList
           data={listData}
@@ -251,27 +342,6 @@ const styles = StyleSheet.create({
     maxWidth: MaxContentWidth,
     alignSelf: 'center',
   },
-  chartWrap: {
-    position: 'relative',
-  },
-  chartOverlay: {
-    position: 'absolute',
-    top: 0,
-    right: 0,
-    bottom: 0,
-    left: 0,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  searchRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: Spacing.two,
-  },
-  searchText: {
-    fontSize: 20,
-    lineHeight: 28,
-  },
   stickyHeader: {
     width: '100%',
     maxWidth: MaxContentWidth,
@@ -296,6 +366,49 @@ const styles = StyleSheet.create({
     gap: Spacing.three,
     borderRadius: Radius.md,
     padding: Spacing.three,
+  },
+  cardExpanded: {
+    minHeight: EXPANDED_CARD_MIN_HEIGHT,
+  },
+  discoveredCard: {
+    flexDirection: 'column',
+    alignItems: 'stretch',
+    justifyContent: 'flex-start',
+    gap: Spacing.two,
+  },
+  deviceList: {
+    flex: 1,
+    minHeight: 0,
+  },
+  deviceListContent: {
+    gap: Spacing.two,
+  },
+  deviceRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: Spacing.three,
+  },
+  connectButton: {
+    height: 36,
+    paddingHorizontal: Spacing.three,
+    borderRadius: Radius.pill,
+    backgroundColor: '#FFFFFF',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  connectLabel: {
+    color: '#000000',
+  },
+  deviceInfo: {
+    flex: 1,
+    minWidth: 0,
+    gap: Spacing.half,
+  },
+  whiteText: {
+    color: '#FFFFFF',
+  },
+  whiteSecondary: {
+    color: 'rgba(255, 255, 255, 0.72)',
   },
   cardMain: {
     flex: 1,

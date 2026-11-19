@@ -146,7 +146,7 @@ function ReadingCard({
       </View>
 
       <View style={styles.cardSide}>
-        <ThemedText type="small" style={[styles.confidence, { color: theme.text, opacity: 0.5 }]}>
+        <ThemedText type="small" style={[styles.confidence, { color: theme.text, opacity: 0.25 }]}>
           {showActions ? `Confidence score ${confidence}` : confidence}
         </ThemedText>
         {showActions ? (

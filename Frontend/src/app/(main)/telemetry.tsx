@@ -77,49 +77,31 @@ async function copyText(value: string) {
 function LoadingCard({
   state,
   devices,
-  logsColor,
   connectedDevice,
   onConnect,
   expansion,
 }: {
   state: TelemetryState;
   devices: HeadsetDevice[];
-  logsColor: string;
   connectedDevice: HeadsetDevice | null;
   onConnect: (device: HeadsetDevice) => void;
   /** Animated extra height of the discovered state, shared with the screen. */
   expansion: Animated.Value;
 }) {
   const theme = useTheme();
+  const scheme = useThemeScheme();
   const dots = useTerminalLoading(state !== 'streaming');
-  const blueMode = state !== 'streaming';
-
-  // The card sits on the accent fill while searching / listing and falls back
-  // to the secondary surface once a headset is streaming.
-  const [colorMix] = useState(() => new Animated.Value(state === 'streaming' ? 0 : 1));
-
-  useEffect(() => {
-    Animated.timing(colorMix, {
-      toValue: blueMode ? 1 : 0,
-      duration: CARD_ANIMATION_MS,
-      easing: Easing.out(Easing.cubic),
-      useNativeDriver: false,
-    }).start();
-  }, [blueMode, colorMix]);
-
-  const backgroundColor = colorMix.interpolate({
-    inputRange: [0, 1],
-    outputRange: [theme.secondary, logsColor],
-  });
-  const foregroundColor = blueMode ? '#FFFFFF' : theme.text;
-  const secondaryColor = blueMode ? 'rgba(255, 255, 255, 0.72)' : theme.textSecondary;
+  const expandReady = useSymbolFont(['expand_content'], 20);
+  const foregroundColor = theme.text;
+  const secondaryColor = theme.textSecondary;
+  const accentColor = scheme === 'dark' ? '#4DA3FF' : theme.accent;
 
   const cardStyle = [
     styles.card,
     styles.animatedCard,
     {
       height: Animated.add(BASE_CARD_MIN_HEIGHT, expansion),
-      backgroundColor,
+      backgroundColor: theme.secondary,
       borderColor: theme.secondary,
     },
   ];
@@ -127,7 +109,7 @@ function LoadingCard({
   if (state === 'discovered' && devices.length > 0) {
     return (
       <Animated.View style={[...cardStyle, styles.discoveredCard]}>
-        <ThemedText type="smallBold" style={styles.whiteText}>
+        <ThemedText type="smallBold" style={{ color: theme.text }}>
           Available headsets
         </ThemedText>
         <ScrollView
@@ -138,14 +120,13 @@ function LoadingCard({
           {devices.map((device) => (
             <View key={device.id} style={styles.deviceRow}>
               <View style={styles.deviceInfo}>
-                <ThemedText type="smallBold" style={styles.whiteText} numberOfLines={1}>
+                <ThemedText type="smallBold" style={{ color: theme.text }} numberOfLines={1}>
                   {device.name}
                 </ThemedText>
                 <Text
                   style={[
                     styles.terminal,
-                    styles.whiteSecondary,
-                    { fontFamily: Fonts?.mono ?? 'monospace' },
+                    { color: theme.textSecondary, fontFamily: Fonts?.mono ?? 'monospace' },
                   ]}
                   numberOfLines={1}>
                   {device.id}
@@ -157,9 +138,9 @@ function LoadingCard({
                 onPress={() => onConnect(device)}
                 style={({ pressed }) => [
                   styles.connectButton,
-                  { opacity: pressed ? 0.85 : 1 },
+                  { borderColor: theme.text, opacity: pressed ? 0.85 : 1 },
                 ]}>
-                <ThemedText type="smallBold" style={styles.connectLabel}>
+                <ThemedText type="smallBold" style={{ color: theme.text }}>
                   Connect
                 </ThemedText>
               </Pressable>
@@ -175,9 +156,25 @@ function LoadingCard({
   return (
     <Animated.View style={cardStyle}>
       <View style={styles.cardMain}>
-        <ThemedText type="smallBold" style={{ color: foregroundColor }}>
-          {searching ? 'Searching for headset' : 'Detecting intent'}
-        </ThemedText>
+        <View style={styles.statusLine}>
+          {searching ? (
+            <ThemedText type="smallBold" style={{ color: foregroundColor }}>
+              Searching for headset
+            </ThemedText>
+          ) : (
+            <>
+              <ThemedText
+                type="smallBold"
+                style={[styles.connectedName, { color: accentColor }]}
+                numberOfLines={1}>
+                {connectedDevice?.name ?? 'Connected headset'}
+              </ThemedText>
+              <ThemedText type="smallBold" style={{ color: foregroundColor }}>
+                {' : Detecting intent'}
+              </ThemedText>
+            </>
+          )}
+        </View>
         <Text
           style={[
             styles.terminal,
@@ -187,16 +184,21 @@ function LoadingCard({
         </Text>
       </View>
       {state === 'streaming' ? (
-        <View style={[styles.cardSide, styles.cardSideInfo]}>
-          <ThemedText type="smallBold" style={{ color: foregroundColor }} numberOfLines={1}>
-            {connectedDevice?.name ?? 'Connected headset'}
-          </ThemedText>
+        <View style={styles.cardSide}>
           <Text
+            accessibilityElementsHidden
+            aria-hidden
+            importantForAccessibility="no-hide-descendants"
+            selectable={false}
             style={[
-              styles.terminal,
-              { color: secondaryColor, fontFamily: Fonts?.mono ?? 'monospace' },
+              styles.expandGlyph,
+              {
+                color: secondaryColor,
+                fontFamily: Platform.OS === 'web' ? SYMBOL_FONT_FAMILY : undefined,
+                opacity: Platform.OS === 'web' && !expandReady ? 0 : 1,
+              },
             ]}>
-            Battery: 40%
+            {Platform.OS === 'web' ? 'expand_content' : '⤢'}
           </Text>
         </View>
       ) : null}
@@ -304,15 +306,12 @@ function expandedCardHeight(deviceCount: number) {
 }
 
 export default function TelemetryScreen() {
-  const theme = useTheme();
-  const scheme = useThemeScheme();
   const listData = useMemo(() => DUMMY_READINGS, []);
   const copyReady = useSymbolFont(['content_copy'], 20);
   const [activeIndex, setActiveIndex] = useState(0);
   const [telemetryState, setTelemetryState] = useState<TelemetryState>('searching');
   const [discoveredHeadsets, setDiscoveredHeadsets] = useState<HeadsetDevice[]>([]);
   const [connectedDevice, setConnectedDevice] = useState<HeadsetDevice | null>(null);
-  const logsColor = scheme === 'dark' ? '#4DA3FF' : theme.accent;
   /** Animated height the lower half gains while the headset list is open. */
   const [expansion] = useState(() => new Animated.Value(0));
 
@@ -391,7 +390,6 @@ export default function TelemetryScreen() {
           <LoadingCard
             state={telemetryState}
             devices={discoveredHeadsets}
-            logsColor={logsColor}
             connectedDevice={connectedDevice}
             onConnect={onConnect}
             expansion={expansion}
@@ -496,23 +494,13 @@ const styles = StyleSheet.create({
     borderRadius: Radius.pill,
     backgroundColor: 'transparent',
     borderWidth: 1,
-    borderColor: '#FFFFFF',
     alignItems: 'center',
     justifyContent: 'center',
-  },
-  connectLabel: {
-    color: '#FFFFFF',
   },
   deviceInfo: {
     flex: 1,
     minWidth: 0,
     gap: Spacing.half,
-  },
-  whiteText: {
-    color: '#FFFFFF',
-  },
-  whiteSecondary: {
-    color: 'rgba(255, 255, 255, 0.72)',
   },
   cardMain: {
     flex: 1,
@@ -524,10 +512,16 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     gap: Spacing.two,
   },
-  cardSideInfo: {
-    flexDirection: 'column',
-    alignItems: 'flex-end',
-    gap: Spacing.half,
+  statusLine: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  connectedName: {
+    flexShrink: 1,
+  },
+  expandGlyph: {
+    fontSize: 20,
+    lineHeight: 20,
   },
   confidence: {
     textAlign: 'right',

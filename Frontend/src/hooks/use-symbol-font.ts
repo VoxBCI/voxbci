@@ -9,6 +9,7 @@ export type SymbolName =
   | 'explore_nearby'
   | 'comic_bubble'
   | 'content_copy'
+  | 'expand_content'
   | 'toggle_on';
 
 /** CSS family the web glyphs use. */

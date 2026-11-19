@@ -113,7 +113,7 @@ function CopyIcon({
           {
             color,
             fontFamily: Platform.OS === 'web' ? SYMBOL_FONT_FAMILY : undefined,
-            opacity: Platform.OS === 'web' && !ready ? 0 : 1,
+            opacity: Platform.OS === 'web' && !ready ? 0 : 0.25,
           },
         ]}>
         {Platform.OS === 'web' ? 'content_copy' : '⧉'}
@@ -126,13 +126,12 @@ function ReadingCard({
   item,
   copyReady,
   showActions,
-  accentColor,
 }: {
   item: IntentReading;
   copyReady: boolean;
   showActions: boolean;
-  accentColor: string;
 }) {
+  const theme = useTheme();
   const confidence = `${Math.round(item.confidence * 100)}%`;
 
   return (
@@ -147,11 +146,11 @@ function ReadingCard({
       </View>
 
       <View style={styles.cardSide}>
-        <ThemedText type="small" style={[styles.confidence, { color: accentColor }]}>
+        <ThemedText type="small" style={[styles.confidence, { color: theme.text, opacity: 0.5 }]}>
           {showActions ? `Confidence score ${confidence}` : confidence}
         </ThemedText>
         {showActions ? (
-          <CopyIcon onPress={() => copyText(item.intent)} ready={copyReady} color={accentColor} />
+          <CopyIcon onPress={() => copyText(item.intent)} ready={copyReady} color={theme.text} />
         ) : null}
       </View>
     </OutlinedView>
@@ -204,12 +203,7 @@ export default function TelemetryScreen() {
           data={listData}
           keyExtractor={(item) => item.id}
           renderItem={({ item, index }) => (
-            <ReadingCard
-              item={item}
-              copyReady={copyReady}
-              showActions={index === activeIndex}
-              accentColor={logsColor}
-            />
+            <ReadingCard item={item} copyReady={copyReady} showActions={index === activeIndex} />
           )}
           contentContainerStyle={styles.listContent}
           showsVerticalScrollIndicator={false}

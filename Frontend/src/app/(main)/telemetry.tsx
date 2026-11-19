@@ -263,7 +263,11 @@ export default function TelemetryScreen() {
   const [telemetryState, setTelemetryState] = useState<TelemetryState>('searching');
   const [discoveredHeadsets, setDiscoveredHeadsets] = useState<HeadsetDevice[]>([]);
   const [connectedDevice, setConnectedDevice] = useState<HeadsetDevice | null>(null);
+  const [headerHeight, setHeaderHeight] = useState(BASE_CARD_MIN_HEIGHT + CardLayout.gutter + CardLayout.gap);
   const logsColor = scheme === 'dark' ? '#4DA3FF' : theme.accent;
+  const expanded = telemetryState === 'discovered' && discoveredHeadsets.length > 4;
+  const baseHeaderHeight = BASE_CARD_MIN_HEIGHT + CardLayout.gutter + CardLayout.gap;
+  const lowerShift = expanded ? Math.max(0, (headerHeight - baseHeaderHeight) / 2) : 0;
 
   useEffect(() => {
     if (telemetryState !== 'searching') return;
@@ -306,8 +310,17 @@ export default function TelemetryScreen() {
         </ScrollView>
       </View>
 
-      <View style={styles.bottomHalf}>
-        <View style={styles.stickyHeader}>
+      <View
+        style={[
+          styles.bottomHalf,
+          lowerShift ? { transform: [{ translateY: -lowerShift }] } : null,
+        ]}>
+        <View
+          style={styles.stickyHeader}
+          onLayout={(event) => {
+            const next = event.nativeEvent.layout.height;
+            setHeaderHeight((current) => (Math.abs(current - next) < 0.5 ? current : next));
+          }}>
           <LoadingCard
             state={telemetryState}
             devices={discoveredHeadsets}
@@ -322,7 +335,7 @@ export default function TelemetryScreen() {
           renderItem={({ item, index }) => (
             <ReadingCard item={item} copyReady={copyReady} showActions={index === activeIndex} />
           )}
-          contentContainerStyle={styles.listContent}
+          contentContainerStyle={[styles.listContent, { paddingBottom: CardLayout.bottomInset + lowerShift }]}
           showsVerticalScrollIndicator={false}
           ItemSeparatorComponent={undefined}
           onViewableItemsChanged={onViewableItemsChanged}

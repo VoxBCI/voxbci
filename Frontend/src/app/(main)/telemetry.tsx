@@ -196,8 +196,10 @@ export default function TelemetryScreen() {
               {telemetryState === 'idle' ? (
                 <View style={styles.chartOverlay} pointerEvents="none">
                   <View style={styles.searchRow}>
-                    <ThemedText type="smallBold">Searching for headset</ThemedText>
-                    <ActivityIndicator size="small" color={theme.text} />
+                    <ThemedText type="smallBold" style={[styles.searchText, { color: logsColor }]}>
+                      Searching for headset
+                    </ThemedText>
+                    <ActivityIndicator size="large" color={logsColor} />
                   </View>
                 </View>
               ) : null}
@@ -268,6 +270,10 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: Spacing.two,
+  },
+  searchText: {
+    fontSize: 20,
+    lineHeight: 28,
   },
   stickyHeader: {
     width: '100%',

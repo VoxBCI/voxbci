@@ -1,4 +1,3 @@
-import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import { usePathname } from 'expo-router';
 import { StyleSheet, Text, View } from 'react-native';
 
@@ -10,7 +9,6 @@ import { useTheme } from '@/hooks/use-theme';
 const ICON_SIZE = 30;
 const TOOLBAR_HEIGHT = 50;
 const TOOLBAR_PADDING = 5;
-const PAIR_ICON_SIZE = 40;
 
 /**
  * Top toolbar shared by the four main tabs: the VoxBCI logo plus the name of
@@ -35,11 +33,6 @@ export function AppToolbar() {
         <Text accessibilityRole="header" style={[styles.label, { color: theme.text }]}>
           {currentTabLabel(pathname)}
         </Text>
-
-        <View style={styles.pairHeadset}>
-          <Text style={[styles.pairLabel, { color: theme.text }]}>Pair headset</Text>
-          <MaterialIcons name="toggle-on" size={PAIR_ICON_SIZE} color={theme.text} />
-        </View>
       </View>
     </View>
   );
@@ -65,16 +58,6 @@ const styles = StyleSheet.create({
     // Header rule: square corners and a bottom outline only.
     borderRadius: 0,
     borderBottomWidth: StrokeWidth,
-  },
-  pairHeadset: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: Spacing.one,
-    marginLeft: 'auto',
-  },
-  pairLabel: {
-    fontSize: 12,
-    fontWeight: '600',
   },
   label: {
     fontSize: 16,

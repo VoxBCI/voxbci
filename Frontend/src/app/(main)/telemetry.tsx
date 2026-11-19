@@ -69,11 +69,13 @@ function LoadingCard({
   state,
   devices,
   logsColor,
+  connectedDevice,
   onConnect,
 }: {
   state: TelemetryState;
   devices: HeadsetDevice[];
   logsColor: string;
+  connectedDevice: HeadsetDevice | null;
   onConnect: (device: HeadsetDevice) => void;
 }) {
   const theme = useTheme();
@@ -133,6 +135,7 @@ function LoadingCard({
   }
 
   const searching = state === 'searching';
+  const streaming = state === 'streaming';
   const backgroundColor = searching ? logsColor : theme.secondary;
   const foregroundColor = searching ? '#FFFFFF' : theme.text;
   const secondaryColor = searching ? 'rgba(255, 255, 255, 0.72)' : theme.textSecondary;
@@ -151,11 +154,18 @@ function LoadingCard({
           {dots}
         </Text>
       </View>
-      {!searching ? (
-        <View style={styles.cardSide}>
-          <ThemedText type="small" style={{ color: secondaryColor }}>
-            live
+      {streaming ? (
+        <View style={[styles.cardSide, styles.cardSideInfo]}>
+          <ThemedText type="smallBold" style={{ color: foregroundColor }} numberOfLines={1}>
+            {connectedDevice?.name ?? 'Connected headset'}
           </ThemedText>
+          <Text
+            style={[
+              styles.terminal,
+              { color: secondaryColor, fontFamily: Fonts?.mono ?? 'monospace' },
+            ]}>
+            Battery: 40%
+          </Text>
         </View>
       ) : null}
     </OutlinedView>
@@ -252,6 +262,7 @@ export default function TelemetryScreen() {
   const [activeIndex, setActiveIndex] = useState(0);
   const [telemetryState, setTelemetryState] = useState<TelemetryState>('searching');
   const [discoveredHeadsets, setDiscoveredHeadsets] = useState<HeadsetDevice[]>([]);
+  const [connectedDevice, setConnectedDevice] = useState<HeadsetDevice | null>(null);
   const logsColor = scheme === 'dark' ? '#4DA3FF' : theme.accent;
 
   useEffect(() => {
@@ -263,7 +274,8 @@ export default function TelemetryScreen() {
     return () => clearTimeout(id);
   }, [telemetryState]);
 
-  const onConnect = (_device: HeadsetDevice) => {
+  const onConnect = (device: HeadsetDevice) => {
+    setConnectedDevice(device);
     setTelemetryState('streaming');
   };
 
@@ -300,6 +312,7 @@ export default function TelemetryScreen() {
             state={telemetryState}
             devices={discoveredHeadsets}
             logsColor={logsColor}
+            connectedDevice={connectedDevice}
             onConnect={onConnect}
           />
         </View>
@@ -421,6 +434,11 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: Spacing.two,
+  },
+  cardSideInfo: {
+    flexDirection: 'column',
+    alignItems: 'flex-end',
+    gap: Spacing.half,
   },
   confidence: {
     textAlign: 'right',

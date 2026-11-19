@@ -11,6 +11,7 @@ const ICON_SIZE = 30;
 const TOOLBAR_HEIGHT = 50;
 const TOOLBAR_PADDING = 5;
 const PAIR_ICON = 'toggle_on';
+const PAIR_ICON_SIZE = 40;
 
 /**
  * Top toolbar shared by the four main tabs: the VoxBCI logo plus the name of
@@ -23,7 +24,7 @@ const PAIR_ICON = 'toggle_on';
 export function AppToolbar() {
   const pathname = usePathname();
   const theme = useTheme();
-  const iconReady = useSymbolFont([PAIR_ICON], 20);
+  const iconReady = useSymbolFont([PAIR_ICON], PAIR_ICON_SIZE);
 
   return (
     <View style={styles.frame}>
@@ -82,8 +83,8 @@ const styles = StyleSheet.create({
     marginLeft: 'auto',
   },
   pairIcon: {
-    fontSize: 20,
-    lineHeight: 20,
+    fontSize: PAIR_ICON_SIZE,
+    lineHeight: PAIR_ICON_SIZE,
   },
   pairLabel: {
     fontSize: 12,

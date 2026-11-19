@@ -37,7 +37,7 @@ export function AppToolbar() {
 
         <View style={styles.pairHeadset}>
           <Text style={[styles.pairLabel, { color: theme.text }]}>Pair headset</Text>
-          <MaterialIcons name="settings-bluetooth" size={20} color={theme.text} />
+          <MaterialIcons name="toggle-on" size={20} color={theme.text} />
         </View>
       </View>
     </View>

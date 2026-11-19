@@ -10,7 +10,7 @@ import { useTheme } from '@/hooks/use-theme';
 const ICON_SIZE = 30;
 const TOOLBAR_HEIGHT = 50;
 const TOOLBAR_PADDING = 5;
-const PAIR_ICON = 'settings_bluetooth';
+const PAIR_ICON = 'toggle_on';
 
 /**
  * Top toolbar shared by the four main tabs: the VoxBCI logo plus the name of

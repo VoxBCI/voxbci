@@ -9,7 +9,7 @@ export type SymbolName =
   | 'explore_nearby'
   | 'comic_bubble'
   | 'content_copy'
-  | 'settings_bluetooth';
+  | 'toggle_on';
 
 /** CSS family the web glyphs use. */
 export const SYMBOL_FONT_FAMILY = 'VoxMaterialSymbols';

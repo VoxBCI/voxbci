@@ -211,9 +211,6 @@ export default function TelemetryScreen() {
       <View style={styles.bottomHalf}>
         <View style={styles.stickyHeader}>
           <LoadingCard />
-          <ThemedText type="smallBold" style={[styles.logsLabel, { color: logsColor }]}>
-            Intent logs
-          </ThemedText>
         </View>
         <FlatList
           data={listData}
@@ -282,13 +279,6 @@ const styles = StyleSheet.create({
     paddingTop: CardLayout.gutter,
     paddingHorizontal: CardLayout.gutter,
     paddingBottom: CardLayout.gap,
-    gap: CardLayout.gap,
-  },
-  logsLabel: {
-    paddingLeft: Spacing.half + 8,
-    paddingRight: Spacing.half,
-    fontSize: 19,
-    lineHeight: 26,
   },
   listContent: {
     width: '100%',

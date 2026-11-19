@@ -38,6 +38,7 @@ export function AppToolbar() {
         </Text>
 
         <View style={styles.pairHeadset}>
+          <Text style={[styles.pairLabel, { color: theme.text }]}>Pair headset</Text>
           <Text
             aria-hidden
             selectable={false}
@@ -47,7 +48,6 @@ export function AppToolbar() {
             ]}>
             {PAIR_ICON}
           </Text>
-          <Text style={[styles.pairLabel, { color: theme.text }]}>Pair headset</Text>
         </View>
       </View>
     </View>

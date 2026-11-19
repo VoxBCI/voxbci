@@ -7,6 +7,8 @@ import {
   StyleSheet,
   Text,
   View,
+  useWindowDimensions,
+  type LayoutChangeEvent,
 } from 'react-native';
 
 import { EegChart } from '@/components/eeg-chart';
@@ -263,11 +265,11 @@ export default function TelemetryScreen() {
   const [telemetryState, setTelemetryState] = useState<TelemetryState>('searching');
   const [discoveredHeadsets, setDiscoveredHeadsets] = useState<HeadsetDevice[]>([]);
   const [connectedDevice, setConnectedDevice] = useState<HeadsetDevice | null>(null);
-  const [headerHeight, setHeaderHeight] = useState(BASE_CARD_MIN_HEIGHT + CardLayout.gutter + CardLayout.gap);
   const logsColor = scheme === 'dark' ? '#4DA3FF' : theme.accent;
-  const expanded = telemetryState === 'discovered' && discoveredHeadsets.length > 4;
-  const baseHeaderHeight = BASE_CARD_MIN_HEIGHT + CardLayout.gutter + CardLayout.gap;
-  const lowerShift = expanded ? Math.max(0, (headerHeight - baseHeaderHeight) / 2) : 0;
+  const viewport = useWindowDimensions();
+  const [screenHeight, setScreenHeight] = useState(0);
+  const [cardHeight, setCardHeight] = useState(BASE_CARD_MIN_HEIGHT);
+  const collapsedCardHeight = useRef(BASE_CARD_MIN_HEIGHT);
 
   useEffect(() => {
     if (telemetryState !== 'searching') return;
@@ -282,6 +284,31 @@ export default function TelemetryScreen() {
     setConnectedDevice(device);
     setTelemetryState('streaming');
   };
+
+  /** The chart always owns the top half of the screen, at a fixed 50% height. */
+  const halfHeight = (screenHeight || viewport.height) / 2;
+
+  /**
+   * How much taller the status card got when the headset list appeared. The
+   * lower half absorbs that extra height and lifts by half of it, so the card
+   * and logs stay centred instead of being pushed towards the bottom.
+   */
+  const expansion =
+    telemetryState === 'discovered' ? Math.max(0, cardHeight - collapsedCardHeight.current) : 0;
+
+  const onScreenLayout = useCallback((event: LayoutChangeEvent) => {
+    const next = event.nativeEvent.layout.height;
+    setScreenHeight((current) => (Math.abs(current - next) < 0.5 ? current : next));
+  }, []);
+
+  const onCardLayout = useCallback(
+    (event: LayoutChangeEvent) => {
+      const next = event.nativeEvent.layout.height;
+      setCardHeight(next);
+      if (telemetryState !== 'discovered') collapsedCardHeight.current = next;
+    },
+    [telemetryState],
+  );
 
   const viewabilityConfig = useRef({ itemVisiblePercentThreshold: 60 }).current;
 
@@ -299,8 +326,8 @@ export default function TelemetryScreen() {
   );
 
   return (
-    <ThemedView style={styles.screen}>
-      <View style={styles.topHalf}>
+    <ThemedView style={styles.screen} onLayout={onScreenLayout}>
+      <View style={[styles.topHalf, { height: halfHeight }]}>
         <ScrollView
           contentContainerStyle={styles.chartScrollContent}
           showsVerticalScrollIndicator={false}>
@@ -313,21 +340,18 @@ export default function TelemetryScreen() {
       <View
         style={[
           styles.bottomHalf,
-          lowerShift ? { transform: [{ translateY: -lowerShift }] } : null,
+          { height: halfHeight + expansion, marginTop: -expansion / 2 },
         ]}>
-        <View
-          style={styles.stickyHeader}
-          onLayout={(event) => {
-            const next = event.nativeEvent.layout.height;
-            setHeaderHeight((current) => (Math.abs(current - next) < 0.5 ? current : next));
-          }}>
-          <LoadingCard
-            state={telemetryState}
-            devices={discoveredHeadsets}
-            logsColor={logsColor}
-            connectedDevice={connectedDevice}
-            onConnect={onConnect}
-          />
+        <View style={styles.stickyHeader}>
+          <View onLayout={onCardLayout}>
+            <LoadingCard
+              state={telemetryState}
+              devices={discoveredHeadsets}
+              logsColor={logsColor}
+              connectedDevice={connectedDevice}
+              onConnect={onConnect}
+            />
+          </View>
         </View>
         <FlatList
           data={listData}
@@ -335,7 +359,7 @@ export default function TelemetryScreen() {
           renderItem={({ item, index }) => (
             <ReadingCard item={item} copyReady={copyReady} showActions={index === activeIndex} />
           )}
-          contentContainerStyle={[styles.listContent, { paddingBottom: CardLayout.bottomInset + lowerShift }]}
+          contentContainerStyle={styles.listContent}
           showsVerticalScrollIndicator={false}
           ItemSeparatorComponent={undefined}
           onViewableItemsChanged={onViewableItemsChanged}
@@ -349,13 +373,17 @@ export default function TelemetryScreen() {
 const styles = StyleSheet.create({
   screen: {
     flex: 1,
+    // The lower half grows past the bottom edge when the headset list appears.
+    overflow: 'hidden',
   },
   topHalf: {
-    flex: 1,
+    flexGrow: 0,
+    flexShrink: 0,
     minHeight: 0,
   },
   bottomHalf: {
-    flex: 1,
+    flexGrow: 0,
+    flexShrink: 0,
     minHeight: 0,
   },
   chartScrollContent: {

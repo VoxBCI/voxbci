@@ -30,15 +30,15 @@ export function AppToolbar() {
           styles.toolbar,
           { backgroundColor: theme.background, borderBottomColor: theme.secondary },
         ]}>
-        <View style={styles.pairHeadset}>
-          <MaterialIcons name="settings-bluetooth" size={20} color={theme.text} />
-          <Text style={[styles.pairLabel, { color: theme.text }]}>Pair headset</Text>
-        </View>
-
         <VoxLogo size={ICON_SIZE} />
         <Text accessibilityRole="header" style={[styles.label, { color: theme.text }]}>
           {currentTabLabel(pathname)}
         </Text>
+
+        <View style={styles.pairHeadset}>
+          <MaterialIcons name="settings-bluetooth" size={20} color={theme.text} />
+          <Text style={[styles.pairLabel, { color: theme.text }]}>Pair headset</Text>
+        </View>
       </View>
     </View>
   );
@@ -69,6 +69,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: Spacing.one,
+    marginLeft: 'auto',
   },
   pairLabel: {
     fontSize: 12,

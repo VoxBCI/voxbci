@@ -32,6 +32,11 @@ export function AppToolbar() {
           styles.toolbar,
           { backgroundColor: theme.background, borderBottomColor: theme.secondary },
         ]}>
+        <VoxLogo size={ICON_SIZE} />
+        <Text accessibilityRole="header" style={[styles.label, { color: theme.text }]}>
+          {currentTabLabel(pathname)}
+        </Text>
+
         <View style={styles.pairHeadset}>
           <Text
             aria-hidden
@@ -44,11 +49,6 @@ export function AppToolbar() {
           </Text>
           <Text style={[styles.pairLabel, { color: theme.text }]}>Pair headset</Text>
         </View>
-
-        <VoxLogo size={ICON_SIZE} />
-        <Text accessibilityRole="header" style={[styles.label, { color: theme.text }]}>
-          {currentTabLabel(pathname)}
-        </Text>
       </View>
     </View>
   );
@@ -79,6 +79,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: Spacing.one,
+    marginLeft: 'auto',
   },
   pairIcon: {
     fontSize: 20,

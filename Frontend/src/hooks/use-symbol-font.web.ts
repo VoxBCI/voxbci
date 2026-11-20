@@ -10,6 +10,7 @@ import { useEffect, useState } from 'react';
  */
 export type SymbolName =
   | 'airwave'
+  | 'collapse_content'
   | 'explore_nearby'
   | 'comic_bubble'
   | 'content_copy'

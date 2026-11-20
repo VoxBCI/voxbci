@@ -15,6 +15,7 @@ import { EegChart } from '@/components/eeg-chart';
 import { OutlinedView } from '@/components/outlined-view';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
+import { VoxLogo } from '@/components/vox-logo';
 import {
   CardLayout,
   Fonts,
@@ -74,24 +75,68 @@ async function copyText(value: string) {
   // Fallback: best-effort no-op on platforms without clipboard access wired up.
 }
 
+function ExpandToggle({
+  expanded,
+  ready,
+  color,
+  onPress,
+}: {
+  expanded: boolean;
+  ready: boolean;
+  color: string;
+  onPress: () => void;
+}) {
+  const glyph = expanded ? 'collapse_content' : 'expand_content';
+  const fallback = expanded ? '⤡' : '⤢';
+
+  return (
+    <Pressable
+      accessibilityRole="button"
+      accessibilityLabel={expanded ? 'Collapse connection details' : 'Expand connection details'}
+      onPress={onPress}
+      hitSlop={8}
+      style={({ pressed }) => ({ opacity: pressed ? 0.6 : 1 })}>
+      <Text
+        selectable={false}
+        style={[
+          styles.expandGlyph,
+          {
+            color,
+            fontFamily: Platform.OS === 'web' ? SYMBOL_FONT_FAMILY : undefined,
+            opacity: Platform.OS === 'web' && !ready ? 0 : 1,
+          },
+        ]}>
+        {Platform.OS === 'web' ? glyph : fallback}
+      </Text>
+    </Pressable>
+  );
+}
+
 function LoadingCard({
   state,
   devices,
   connectedDevice,
+  connectedExpanded,
   onConnect,
+  onToggleConnected,
+  onDisconnect,
   expansion,
 }: {
   state: TelemetryState;
   devices: HeadsetDevice[];
   connectedDevice: HeadsetDevice | null;
+  /** Whether the connected card is open at four times its compact height. */
+  connectedExpanded: boolean;
   onConnect: (device: HeadsetDevice) => void;
-  /** Animated extra height of the discovered state, shared with the screen. */
+  onToggleConnected: () => void;
+  onDisconnect: () => void;
+  /** Animated extra height of the expanded state, shared with the screen. */
   expansion: Animated.Value;
 }) {
   const theme = useTheme();
   const scheme = useThemeScheme();
   const dots = useTerminalLoading(state !== 'streaming');
-  const expandReady = useSymbolFont(['expand_content'], 20);
+  const iconReady = useSymbolFont(['expand_content', 'collapse_content'], 20);
   const foregroundColor = theme.text;
   const secondaryColor = theme.textSecondary;
   const accentColor = scheme === 'dark' ? '#4DA3FF' : theme.accent;
@@ -151,6 +196,48 @@ function LoadingCard({
     );
   }
 
+  if (state === 'streaming' && connectedExpanded) {
+    return (
+      <Animated.View style={[...cardStyle, styles.discoveredCard, styles.connectedCard]}>
+        <View style={styles.connectedHeader}>
+          <ThemedText
+            type="smallBold"
+            style={[styles.connectedName, { color: accentColor }]}
+            numberOfLines={1}>
+            {connectedDevice?.name ?? 'Connected headset'}
+          </ThemedText>
+          <ExpandToggle
+            expanded
+            ready={iconReady}
+            color={secondaryColor}
+            onPress={onToggleConnected}
+          />
+        </View>
+
+        <View style={styles.connectedBody}>
+          <VoxLogo size={112} />
+          <ThemedText type="small" style={{ color: secondaryColor }}>
+            Connected · Detecting intent
+          </ThemedText>
+        </View>
+
+        <Pressable
+          accessibilityRole="button"
+          accessibilityLabel={`Disconnect from ${connectedDevice?.name ?? 'headset'}`}
+          onPress={onDisconnect}
+          style={({ pressed }) => [
+            styles.connectButton,
+            styles.disconnectButton,
+            { borderColor: theme.text, opacity: pressed ? 0.85 : 1 },
+          ]}>
+          <ThemedText type="smallBold" style={{ color: theme.text }}>
+            Disconnect
+          </ThemedText>
+        </Pressable>
+      </Animated.View>
+    );
+  }
+
   const searching = state === 'searching';
 
   return (
@@ -185,21 +272,12 @@ function LoadingCard({
       </View>
       {state === 'streaming' ? (
         <View style={styles.cardSide}>
-          <Text
-            accessibilityElementsHidden
-            aria-hidden
-            importantForAccessibility="no-hide-descendants"
-            selectable={false}
-            style={[
-              styles.expandGlyph,
-              {
-                color: secondaryColor,
-                fontFamily: Platform.OS === 'web' ? SYMBOL_FONT_FAMILY : undefined,
-                opacity: Platform.OS === 'web' && !expandReady ? 0 : 1,
-              },
-            ]}>
-            {Platform.OS === 'web' ? 'expand_content' : '⤢'}
-          </Text>
+          <ExpandToggle
+            expanded={false}
+            ready={iconReady}
+            color={secondaryColor}
+            onPress={onToggleConnected}
+          />
         </View>
       ) : null}
     </Animated.View>
@@ -312,6 +390,7 @@ export default function TelemetryScreen() {
   const [telemetryState, setTelemetryState] = useState<TelemetryState>('searching');
   const [discoveredHeadsets, setDiscoveredHeadsets] = useState<HeadsetDevice[]>([]);
   const [connectedDevice, setConnectedDevice] = useState<HeadsetDevice | null>(null);
+  const [connectedExpanded, setConnectedExpanded] = useState(false);
   /** Animated height the lower half gains while the headset list is open. */
   const [expansion] = useState(() => new Animated.Value(0));
 
@@ -326,18 +405,32 @@ export default function TelemetryScreen() {
 
   const onConnect = (device: HeadsetDevice) => {
     setConnectedDevice(device);
+    setConnectedExpanded(false);
     setTelemetryState('streaming');
   };
 
+  const onToggleConnected = () => {
+    setConnectedExpanded((current) => !current);
+  };
+
+  const onDisconnect = () => {
+    setConnectedExpanded(false);
+    setConnectedDevice(null);
+    setDiscoveredHeadsets([]);
+    setTelemetryState('searching');
+  };
+
   /**
-   * How much taller the status card gets when the headset list appears. The
-   * lower half absorbs that extra height and lifts by half of it, so the card
-   * and logs stay centred instead of being pushed towards the bottom.
+   * How much taller the status card gets when the headset list or the connected
+   * details open. The lower half absorbs that extra height and lifts by half of
+   * it, so the card and logs stay centred instead of sinking downwards.
    */
   const targetExpansion =
     telemetryState === 'discovered' && discoveredHeadsets.length > 0
       ? Math.max(0, expandedCardHeight(discoveredHeadsets.length) - BASE_CARD_MIN_HEIGHT)
-      : 0;
+      : telemetryState === 'streaming' && connectedExpanded
+        ? EXPANDED_CARD_MIN_HEIGHT - BASE_CARD_MIN_HEIGHT
+        : 0;
 
   useEffect(() => {
     Animated.timing(expansion, {
@@ -391,7 +484,10 @@ export default function TelemetryScreen() {
             state={telemetryState}
             devices={discoveredHeadsets}
             connectedDevice={connectedDevice}
+            connectedExpanded={connectedExpanded}
             onConnect={onConnect}
+            onToggleConnected={onToggleConnected}
+            onDisconnect={onDisconnect}
             expansion={expansion}
           />
         </View>
@@ -522,6 +618,23 @@ const styles = StyleSheet.create({
   expandGlyph: {
     fontSize: 20,
     lineHeight: 20,
+  },
+  connectedCard: {
+    justifyContent: 'space-between',
+  },
+  connectedHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    gap: Spacing.two,
+  },
+  connectedBody: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: Spacing.two,
+  },
+  disconnectButton: {
+    alignSelf: 'stretch',
   },
   confidence: {
     textAlign: 'right',

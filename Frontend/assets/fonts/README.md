@@ -5,13 +5,13 @@
 tab bar, telemetry actions, and toolbar controls (`src/components/app-tabs.web.tsx`,
 `src/app/(main)/telemetry.tsx`, `src/components/app-toolbar.web.tsx`). The font
 renders icon names as ligatures, so the UI renders the text `airwave`,
-`explore_nearby`, `comic_bubble`, `content_copy`, `expand_content` and
-`toggle_on` as icons.
+`explore_nearby`, `comic_bubble`, `content_copy`, `expand_content`,
+`collapse_content` and `toggle_on` as icons.
 
 It was downloaded from Google Fonts with this request:
 
 ```
-https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0&icon_names=airwave,comic_bubble,content_copy,expand_content,explore_nearby,toggle_on
+https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0&icon_names=airwave,collapse_content,comic_bubble,content_copy,expand_content,explore_nearby,toggle_on
 ```
 
 Send a Chrome user agent to get the `woff2` variant of the CSS, then download

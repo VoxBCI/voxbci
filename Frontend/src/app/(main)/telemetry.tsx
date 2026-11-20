@@ -12,10 +12,10 @@ import {
 } from 'react-native';
 
 import { EegChart } from '@/components/eeg-chart';
+import { HeadsetViewer } from '@/components/headset-viewer';
 import { OutlinedView } from '@/components/outlined-view';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
-import { VoxLogo } from '@/components/vox-logo';
 import {
   CardLayout,
   Fonts,
@@ -215,7 +215,7 @@ function LoadingCard({
         </View>
 
         <View style={styles.connectedBody}>
-          <VoxLogo size={112} />
+          <HeadsetViewer height={150} />
           <ThemedText type="small" style={{ color: secondaryColor }}>
             Connected · Detecting intent
           </ThemedText>
@@ -642,6 +642,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     gap: Spacing.two,
+    width: '100%',
   },
   connectedFooter: {
     gap: Spacing.two,

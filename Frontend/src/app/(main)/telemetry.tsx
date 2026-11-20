@@ -221,19 +221,29 @@ function LoadingCard({
           </ThemedText>
         </View>
 
-        <Pressable
-          accessibilityRole="button"
-          accessibilityLabel={`Disconnect from ${connectedDevice?.name ?? 'headset'}`}
-          onPress={onDisconnect}
-          style={({ pressed }) => [
-            styles.connectButton,
-            styles.disconnectButton,
-            { borderColor: theme.text, opacity: pressed ? 0.85 : 1 },
-          ]}>
-          <ThemedText type="smallBold" style={{ color: theme.text }}>
-            Disconnect
-          </ThemedText>
-        </Pressable>
+        <View style={styles.connectedFooter}>
+          <Text
+            style={[
+              styles.terminal,
+              styles.battery,
+              { color: secondaryColor, fontFamily: Fonts?.mono ?? 'monospace' },
+            ]}>
+            Battery: 40%
+          </Text>
+          <Pressable
+            accessibilityRole="button"
+            accessibilityLabel={`Disconnect from ${connectedDevice?.name ?? 'headset'}`}
+            onPress={onDisconnect}
+            style={({ pressed }) => [
+              styles.connectButton,
+              styles.disconnectButton,
+              { borderColor: theme.text, opacity: pressed ? 0.85 : 1 },
+            ]}>
+            <ThemedText type="smallBold" style={{ color: theme.text }}>
+              Disconnect
+            </ThemedText>
+          </Pressable>
+        </View>
       </Animated.View>
     );
   }
@@ -632,6 +642,12 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     gap: Spacing.two,
+  },
+  connectedFooter: {
+    gap: Spacing.two,
+  },
+  battery: {
+    textAlign: 'center',
   },
   disconnectButton: {
     alignSelf: 'stretch',

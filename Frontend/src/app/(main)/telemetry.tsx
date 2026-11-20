@@ -198,51 +198,64 @@ function LoadingCard({
 
   if (state === 'streaming' && connectedExpanded) {
     return (
-      <Animated.View style={[...cardStyle, styles.discoveredCard, styles.connectedCard]}>
-        <View style={styles.connectedHeader}>
-          <ThemedText
-            type="smallBold"
-            style={[styles.connectedName, { color: accentColor }]}
-            numberOfLines={1}>
-            {connectedDevice?.name ?? 'Connected headset'}
-          </ThemedText>
-          <ExpandToggle
-            expanded
-            ready={iconReady}
-            color={secondaryColor}
-            onPress={onToggleConnected}
-          />
+      <Animated.View
+        style={[
+          styles.animatedCard,
+          styles.connectedExpandedShell,
+          {
+            height: Animated.add(BASE_CARD_MIN_HEIGHT, expansion),
+            backgroundColor: theme.secondary,
+            borderColor: theme.secondary,
+          },
+        ]}>
+        <View style={StyleSheet.absoluteFill} pointerEvents="auto">
+          <HeadsetViewer fill />
         </View>
 
-        <View style={styles.connectedBody}>
-          <HeadsetViewer height={150} />
-          <ThemedText type="small" style={{ color: secondaryColor }}>
-            Connected · Detecting intent
-          </ThemedText>
-        </View>
-
-        <View style={styles.connectedFooter}>
-          <Text
-            style={[
-              styles.terminal,
-              styles.battery,
-              { color: secondaryColor, fontFamily: Fonts?.mono ?? 'monospace' },
-            ]}>
-            Battery: 40%
-          </Text>
-          <Pressable
-            accessibilityRole="button"
-            accessibilityLabel={`Disconnect from ${connectedDevice?.name ?? 'headset'}`}
-            onPress={onDisconnect}
-            style={({ pressed }) => [
-              styles.connectButton,
-              styles.disconnectButton,
-              { borderColor: theme.text, opacity: pressed ? 0.85 : 1 },
-            ]}>
-            <ThemedText type="smallBold" style={{ color: theme.text }}>
-              Disconnect
+        <View style={styles.connectedOverlay} pointerEvents="box-none">
+          <View style={styles.connectedHeader}>
+            <ThemedText
+              type="smallBold"
+              style={[styles.connectedName, { color: accentColor }]}
+              numberOfLines={1}>
+              {connectedDevice?.name ?? 'Connected headset'}
             </ThemedText>
-          </Pressable>
+            <ExpandToggle
+              expanded
+              ready={iconReady}
+              color={secondaryColor}
+              onPress={onToggleConnected}
+            />
+          </View>
+
+          <View style={styles.connectedOverlayBottom} pointerEvents="box-none">
+            <ThemedText type="small" style={{ color: secondaryColor }}>
+              Connected · Detecting intent
+            </ThemedText>
+            <View style={styles.connectedFooter}>
+              <Text
+                style={[
+                  styles.terminal,
+                  styles.battery,
+                  { color: secondaryColor, fontFamily: Fonts?.mono ?? 'monospace' },
+                ]}>
+                Battery: 40%
+              </Text>
+              <Pressable
+                accessibilityRole="button"
+                accessibilityLabel={`Disconnect from ${connectedDevice?.name ?? 'headset'}`}
+                onPress={onDisconnect}
+                style={({ pressed }) => [
+                  styles.connectButton,
+                  styles.disconnectButton,
+                  { borderColor: theme.text, opacity: pressed ? 0.85 : 1 },
+                ]}>
+                <ThemedText type="smallBold" style={{ color: theme.text }}>
+                  Disconnect
+                </ThemedText>
+              </Pressable>
+            </View>
+          </View>
         </View>
       </Animated.View>
     );
@@ -636,6 +649,17 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
+    gap: Spacing.two,
+  },
+  connectedExpandedShell: {
+    borderRadius: Radius.md,
+  },
+  connectedOverlay: {
+    flex: 1,
+    justifyContent: 'space-between',
+    padding: Spacing.three,
+  },
+  connectedOverlayBottom: {
     gap: Spacing.two,
   },
   connectedBody: {

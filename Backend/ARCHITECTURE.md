@@ -1,7 +1,8 @@
 # VoxBCI Backend — Architecture
 
-Status: **steps 1–3 implemented** (skeleton, auth, users) — see `Backend/README.md`.
-Everything below is the target design; steps 4–9 are still open.
+Status: **scaffold through step 6 implemented** (skeleton, auth, users, presence,
+chats, telemetry REST) — see `Backend/README.md`. WebSocket realtime, uploads,
+Google sign-in and the generated client types remain; §13 covers the Azure target.
 Scope: everything the current frontend mock data stands in for — login, account data,
 chats, headset telemetry, discovery map presence, and a storage bucket that can be swapped in.
 
@@ -336,3 +337,51 @@ single-layer change.
 - Auth tonight: dev email login only, or wire real Google client IDs now (§5).
 - Presence semantics: 150 m grid + 5 min TTL acceptable, or coarser/finer?
 - Do intents need to reach the chat screen ("send this intent as a message") in v1?
+
+---
+
+## 13. Deployment target — Microsoft Azure
+
+**Decision: Azure, not Firebase.** This is an Imagine Cup entry: judges are Microsoft, the
+Azure credits are free, and the story is coherent — one cloud, one identity model, one
+monitoring plane. Firebase would add a second vendor (Google) next to Google sign-in and move
+the auth/database rules outside the Fastify code the team already controls.
+
+The three layers the app touches — auth, data, uploads — all sit behind interfaces today
+(`auth/service.ts`, `store/repositories.ts`, `StorageAdapter`), so each row below is a
+single-layer swap, not a rewrite.
+
+| Concern | Local today | Azure target | Swap cost |
+|---|---|---|---|
+| Identity | `POST /auth/dev-login` | **Microsoft Entra External ID** (CIAM) with Google as a federated IdP; the API verifies Entra ID tokens and keeps issuing its own access/refresh pair | `auth/service.ts` + one route; the guard, refresh rotation and client stay |
+| Database | `data/*.json` | **Azure Database for PostgreSQL — Flexible Server** + PostGIS + Drizzle | `store/json/*` → `store/sql/*`, interfaces unchanged |
+| API hosting | `npm run dev` on :4000 | **Azure Container Apps** (scale-to-zero, custom domain, WebSocket-friendly) or App Service | Dockerfile + `az containerapp up` |
+| Files | `storage/local.ts` | **Azure Blob Storage** + Front Door/CDN for avatar URLs | one `StorageAdapter` implementation + env |
+| Realtime | not built yet | **Azure Web PubSub** (or SignalR Service) for intents/EEG fan-out | `realtime/hub.ts` implementation only |
+| Secrets | `.env` | **Azure Key Vault** referenced by Container Apps secrets | env plumbing |
+| Observability | pino to stdout | **Application Insights** (OpenTelemetry exporter) + Log Analytics | one plugin |
+| CI/CD | manual | GitHub Actions → `azure/login` → build image → deploy | workflow file |
+
+Notes that matter for the pitch:
+
+- **Entra External ID, not B2C.** External ID is the current CIAM product; B2C is the older
+  path. Google stays as a federation option, so the existing "Continue with Google" button
+  keeps its meaning — the redirect just goes through Entra.
+- **Keep the app's own JWT pair.** Entra proves *who* the user is; the API still owns short-lived
+  access tokens and rotating refresh tokens. That means no client rewrite and no vendor lock on
+  the session model.
+- **Region**: pick one (e.g. `westeurope`) for Postgres, Container Apps and Blob so latency and
+  egress stay predictable during the demo.
+- **Cost**: Container Apps scale-to-zero, Postgres Burstable B1ms, Blob hot tier — comfortably
+  inside the Imagine Cup credit.
+- **Offline demo safety**: the app must still run with the API down (`getChats()` falls back to
+  `DUMMY_CHATS`). Do not let the cloud migration remove that net before the finals.
+
+### What to do tonight (local, no Azure account needed)
+
+1. `Backend`: `npm install && npm run dev`, then `npm run seed:demo`.
+2. `Frontend`: `npx expo start --web --port 8081`.
+3. Sign in with the auth CTA (dev login, `demo@voxbci.app`), then check Profile and Chats
+   against real API data.
+4. Leave the Firebase question closed; revisit only if a teammate needs Firestore offline
+   sync for a feature the Fastify API cannot serve.

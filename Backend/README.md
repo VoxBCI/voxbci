@@ -25,6 +25,35 @@ node -e "console.log(require('crypto').randomBytes(48).toString('base64url'))"
 The server starts on **http://localhost:4000**. Data lives in `Backend/data/*.json`
 (gitignored) — delete the folder to reset.
 
+Seed four demo conversations for the app's Chats tab (the API must be running):
+
+```bash
+npm run seed:demo
+```
+
+## Connect the app
+
+The Expo client talks to `http://localhost:4000` by default — no frontend config needed.
+
+```bash
+cd Frontend
+npx expo start --web --port 8081
+```
+
+`Continue with Google` currently performs a **dev login** (`demo@voxbci.app`, created on first
+use) and stores the session on the device. Profile reads `GET /me`, and the Chats tab reads
+`GET /chats`, falling back to the bundled demo conversations when the API is down.
+
+Overrides live in `Frontend/.env` (see `.env.example`):
+
+| Variable | Default | Use |
+|---|---|---|
+| `EXPO_PUBLIC_API_URL` | `http://localhost:4000` | point at a tunneled/LAN API |
+| `EXPO_PUBLIC_DEV_EMAIL` | `demo@voxbci.app` | the seeded account to sign in as |
+
+A physical device cannot reach `localhost`; the client derives the dev machine's LAN address
+from the Expo dev-server URL, so the same `npm run dev` works on a phone on the same network.
+
 ## Try it
 
 Sign in (dev mode — no Google credentials needed):
@@ -64,9 +93,15 @@ curl -s -X POST http://localhost:4000/api/v1/auth/refresh \
 | GET | `/api/v1/me` | Bearer | current account |
 | PATCH | `/api/v1/me` | Bearer | profile + partial settings |
 | GET | `/api/v1/users/{id}` | Bearer | public card (no email/settings) |
+| GET | `/api/v1/chats` | Bearer | chat list — the shape `Frontend/src/data/chats.ts` already expects |
+| POST | `/api/v1/chats` | Bearer | `{participantId}` → existing or new DM |
+| GET | `/api/v1/chats/{id}/messages` | Bearer | newest first, `?before&limit` |
+| POST | `/api/v1/chats/{id}/messages` | Bearer | `{text, source:'typed'\|'bci', confidence?}` |
+| GET | `/api/v1/presence/nearby` | Bearer | discovery map, grid-snapped coordinates |
+| GET | `/api/v1/devices` | Bearer | discoverable headsets (dummy registry) |
 
-Next per the build order: presence (step 4), chats (5), telemetry (6), uploads (7),
-Google sign-in (8).
+Next per the build order: avatar uploads (step 7), Google sign-in (8), and the
+OpenAPI-generated client types (9).
 
 ### Errors
 
@@ -98,6 +133,7 @@ Every failure is RFC 9457 `application/problem+json`, including the request id:
 | Command | What it does |
 |---|---|
 | `npm run dev` | `tsx watch` — restarts on save |
+| `npm run seed:demo` | create the demo account + four conversations (API must be running) |
 | `npm run typecheck` | `tsc --noEmit` |
 | `npm test` | Vitest, via `app.inject()` (no port needed) |
 | `npm run build` | compile to `dist/` |
@@ -112,9 +148,10 @@ src/
   config/env.ts     validated environment, no silent secret defaults
   lib/              AppError, ULID ids, time helpers
   plugins/          requireAuth, problem+json error handler
-  modules/          auth/  users/            ← presence, chats, telemetry next
+  modules/          auth/ users/ presence/ chats/ telemetry/ uploads/
   store/            JsonCollection + repository interfaces + JSON impls
 data/               *.json (gitignored)
+scripts/            seed-demo.ts — demo account + conversations
 test/               Vitest suites
 ```
 

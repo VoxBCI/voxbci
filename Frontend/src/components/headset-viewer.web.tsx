@@ -2,7 +2,6 @@ import { Asset } from 'expo-asset';
 import { useEffect, useRef } from 'react';
 import { StyleSheet, View } from 'react-native';
 import * as THREE from 'three';
-import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 import { RoomEnvironment } from 'three/examples/jsm/environments/RoomEnvironment.js';
 import { OBJLoader } from 'three/examples/jsm/loaders/OBJLoader.js';
 
@@ -18,9 +17,13 @@ type HeadsetViewerProps = {
   fill?: boolean;
 };
 
+/** Locked three-quarter view of the headset, framed slightly wider than the default. */
+const LOCKED_CAMERA_POSITION = new THREE.Vector3(3.82, -2.376, 0.122);
+const LOCKED_TARGET = new THREE.Vector3(0, 0, 0);
+
 /**
- * Interactive 3D view of the headset model. Drag to orbit; zoom and pan are
- * disabled so the view stays framed in the card.
+ * 3D view of the headset model, fixed at the chosen camera pose. Orbital
+ * controls are intentionally disabled so the card always shows the same view.
  */
 export function HeadsetViewer({ height = 160, fill = false }: HeadsetViewerProps) {
   const scheme = useThemeScheme();
@@ -28,9 +31,7 @@ export function HeadsetViewer({ height = 160, fill = false }: HeadsetViewerProps
 
   useEffect(() => {
     let cancelled = false;
-    let frame = 0;
     let renderer: THREE.WebGLRenderer | null = null;
-    let controls: OrbitControls | null = null;
     let resizeObserver: ResizeObserver | null = null;
     const cleanups: Array<() => void> = [];
 
@@ -56,7 +57,8 @@ export function HeadsetViewer({ height = 160, fill = false }: HeadsetViewerProps
       const scene = new THREE.Scene();
 
       const camera = new THREE.PerspectiveCamera(32, width / viewHeight, 0.1, 200);
-      camera.position.set(2.2, 1.1, 3.1);
+      camera.position.copy(LOCKED_CAMERA_POSITION);
+      camera.lookAt(LOCKED_TARGET);
 
       renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
       renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
@@ -118,39 +120,21 @@ export function HeadsetViewer({ height = 160, fill = false }: HeadsetViewerProps
       object.scale.setScalar(scale);
       scene.add(object);
 
-      controls = new OrbitControls(camera, renderer.domElement);
-      controls.enableZoom = false;
-      controls.enablePan = false;
-      controls.enableDamping = true;
-      controls.dampingFactor = 0.08;
-      controls.target.set(0, 0, 0);
-      controls.update();
+      const round = (value: number) => Math.round(value * 1000) / 1000;
+      console.log('[HeadsetViewer] locked', {
+        cameraPosition: [
+          round(camera.position.x),
+          round(camera.position.y),
+          round(camera.position.z),
+        ],
+        target: [round(LOCKED_TARGET.x), round(LOCKED_TARGET.y), round(LOCKED_TARGET.z)],
+        distance: round(camera.position.distanceTo(LOCKED_TARGET)),
+      });
 
-      const logOrbitState = (event: string) => {
-        if (!controls) return;
-        const round = (value: number) => Math.round(value * 1000) / 1000;
-        console.log(`[HeadsetViewer] ${event}`, {
-          cameraPosition: [
-            round(camera.position.x),
-            round(camera.position.y),
-            round(camera.position.z),
-          ],
-          target: [
-            round(controls.target.x),
-            round(controls.target.y),
-            round(controls.target.z),
-          ],
-          azimuthal: round(controls.getAzimuthalAngle()),
-          polar: round(controls.getPolarAngle()),
-          distance: round(controls.getDistance()),
-        });
+      const render = () => {
+        if (!renderer) return;
+        renderer.render(scene, camera);
       };
-
-      logOrbitState('init');
-      controls.addEventListener('change', () => logOrbitState('change'));
-      controls.addEventListener('end', () => logOrbitState('end'));
-
-      cleanups.push(() => controls?.dispose());
 
       const onResize = () => {
         if (!renderer || !containerRef.current) return;
@@ -158,6 +142,7 @@ export function HeadsetViewer({ height = 160, fill = false }: HeadsetViewerProps
         camera.aspect = w / h;
         camera.updateProjectionMatrix();
         renderer.setSize(w, h);
+        render();
       };
 
       if (typeof ResizeObserver !== 'undefined') {
@@ -169,20 +154,13 @@ export function HeadsetViewer({ height = 160, fill = false }: HeadsetViewerProps
         cleanups.push(() => window.removeEventListener('resize', onResize));
       }
 
-      const tick = () => {
-        if (cancelled) return;
-        controls?.update();
-        renderer?.render(scene, camera);
-        frame = requestAnimationFrame(tick);
-      };
-      tick();
+      render();
     };
 
     void init();
 
     return () => {
       cancelled = true;
-      if (frame) cancelAnimationFrame(frame);
       cleanups.splice(0).forEach((fn) => {
         try {
           fn();

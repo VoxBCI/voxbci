@@ -78,7 +78,7 @@ export default function AuthScreen() {
             },
           ]}>
           <ThemedText style={[styles.buttonLabel, { color: BUTTON_TEXT }]}>
-            {busy ? 'Signing in…' : 'Continue with Google'}
+            {busy ? 'Signing in…' : 'Continue'}
           </ThemedText>
         </Pressable>
       </View>

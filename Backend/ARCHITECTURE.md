@@ -365,8 +365,8 @@ single-layer swap, not a rewrite.
 Notes that matter for the pitch:
 
 - **Entra External ID, not B2C.** External ID is the current CIAM product; B2C is the older
-  path. Google stays as a federation option, so the existing "Continue with Google" button
-  keeps its meaning — the redirect just goes through Entra.
+  path. Google stays as a federation option, so the auth screen's single CTA can point at Entra
+  and still offer "Continue with Google" — the redirect just goes through Entra.
 - **Keep the app's own JWT pair.** Entra proves *who* the user is; the API still owns short-lived
   access tokens and rotating refresh tokens. That means no client rewrite and no vendor lock on
   the session model.

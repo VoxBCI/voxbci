@@ -40,9 +40,10 @@ cd Frontend
 npx expo start --web --port 8081
 ```
 
-`Continue with Google` currently performs a **dev login** (`demo@voxbci.app`, created on first
-use) and stores the session on the device. Profile reads `GET /me`, and the Chats tab reads
-`GET /chats`, falling back to the bundled demo conversations when the API is down.
+The auth screen's `Continue` button currently performs a **dev login** (`demo@voxbci.app`,
+created on first use) and stores the session on the device. Profile reads `GET /me`, and the
+Chats tab reads `GET /chats`, falling back to the bundled demo conversations when the API is
+down.
 
 Overrides live in `Frontend/.env` (see `.env.example`):
 

@@ -15,11 +15,11 @@ import {
 import { useThemeScheme } from '@/hooks/use-theme';
 
 const ROW_HEIGHT = 68;
-const TOP_PADDING = 10;
-const AXIS_HEIGHT = 24;
+const TOP_PADDING = 6;
+const AXIS_HEIGHT = 18;
 /** Fits the 20px channel labels ("CH 01"). */
 const GUTTER = 72;
-const RIGHT_PADDING = 12;
+const RIGHT_PADDING = 4;
 
 /**
  * The card follows the component-surface rule: the page colour fills it and the
@@ -220,7 +220,7 @@ export function EegChart({ streaming = false }: { streaming?: boolean }) {
   );
   const estimatedPlotWidth = Math.max(
     140,
-    estimatedCardWidth - Spacing.three * 2 - GUTTER - RIGHT_PADDING,
+    estimatedCardWidth - Spacing.two * 2 - GUTTER - RIGHT_PADDING,
   );
   const plotWidth =
     measuredWidth > 0
@@ -310,9 +310,6 @@ export function EegChart({ streaming = false }: { streaming?: boolean }) {
       </View>
 
       <View style={styles.footer}>
-        <Text style={[styles.footerText, { color: palette.muted }]}>
-          Amplitude (µV) · per-channel scale
-        </Text>
         <Text style={[styles.footerText, { color: palette.muted }]}>Time (s)</Text>
       </View>
     </View>
@@ -323,8 +320,8 @@ const styles = StyleSheet.create({
   card: {
     width: '100%',
     borderRadius: Radius.lg,
-    padding: Spacing.three,
-    gap: Spacing.three,
+    padding: Spacing.two,
+    gap: Spacing.one,
   },
   plotArea: {
     width: '100%',
@@ -332,8 +329,7 @@ const styles = StyleSheet.create({
   },
   footer: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
-    gap: Spacing.two,
+    justifyContent: 'flex-end',
   },
   footerText: {
     fontFamily: MONO,

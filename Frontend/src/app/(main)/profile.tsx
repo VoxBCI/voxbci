@@ -1,29 +1,43 @@
-import { Image, StyleSheet, View } from 'react-native';
+import { router } from 'expo-router';
+import { Image, Pressable, StyleSheet, View } from 'react-native';
 
+import { signOut } from '@/api/session';
 import { OutlinedView } from '@/components/outlined-view';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import { CardLayout, MaxContentWidth, Radius, Spacing } from '@/constants/theme';
+import { useSession } from '@/hooks/use-session';
 
 export default function ProfileScreen() {
+  const { user } = useSession();
+
   return (
     <ThemedView style={styles.screen}>
       <View style={styles.content}>
         <View style={styles.profileHeader}>
           <Image
-            source={require('../../../assets/images/avatar-identicon.png')}
+            source={
+              user?.avatarUrl
+                ? { uri: user.avatarUrl }
+                : require('../../../assets/images/avatar-identicon.png')
+            }
             style={styles.avatar}
             accessibilityLabel="Profile picture"
           />
+
+          {user ? (
+            <ThemedText type="smallBold">{user.displayName}</ThemedText>
+          ) : null}
+
           <ThemedText themeColor="textSecondary" style={styles.username}>
-            @username
+            {user ? `@${user.username}` : '@username'}
           </ThemedText>
         </View>
 
         <OutlinedView style={styles.card}>
           <ThemedText type="smallBold">Account settings</ThemedText>
           <ThemedText type="small" themeColor="textSecondary">
-            Manage your account details.
+            {user?.email ?? 'Manage your account details.'}
           </ThemedText>
         </OutlinedView>
 
@@ -33,6 +47,21 @@ export default function ProfileScreen() {
             Manage your headset and connection.
           </ThemedText>
         </OutlinedView>
+
+        {user ? (
+          <OutlinedView style={styles.card}>
+            <Pressable
+              accessibilityRole="button"
+              onPress={() => {
+                void signOut().finally(() => router.replace('/auth'));
+              }}
+              style={({ pressed }) => [styles.signOut, { opacity: pressed ? 0.6 : 1 }]}>
+              <ThemedText type="small" themeColor="textSecondary">
+                Sign out
+              </ThemedText>
+            </Pressable>
+          </OutlinedView>
+        ) : null}
       </View>
     </ThemedView>
   );
@@ -69,5 +98,9 @@ const styles = StyleSheet.create({
     borderRadius: Radius.md,
     padding: Spacing.three,
     gap: Spacing.half,
+  },
+  signOut: {
+    alignItems: 'center',
+    paddingVertical: Spacing.half,
   },
 });

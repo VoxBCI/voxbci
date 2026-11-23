@@ -1,11 +1,13 @@
 import type { ImageSourcePropType } from 'react-native';
 
+import { listChats } from '@/api/endpoints';
+
 /**
  * Chats shown on the Chats tab.
  *
- * This is the single seam between the UI and the data source: replace
- * `getChats()` with a backend call (e.g. `fetch('/api/chats')`) and the screen
- * keeps working, because it only ever talks to this module.
+ * This is the single seam between the UI and the data source: the screen only
+ * ever talks to this module, so it can swap a real endpoint in for `getChats()`
+ * without changing a single component.
  */
 
 export type ChatAvatar = string | ImageSourcePropType;
@@ -51,11 +53,24 @@ export const DUMMY_CHATS: Chat[] = [
 ];
 
 /**
- * Resolves the chat list.
+ * Resolves the chat list from the API.
  *
- * Deliberately async: the UI already awaits it, so switching to a real
- * endpoint is a body change here rather than a screen rewrite.
+ * Falls back to the bundled conversations when the account has no chats yet or
+ * the API is unreachable, so the tab still demos offline and before the seed
+ * script has run (`npm run seed:demo` in `Backend/`).
  */
 export async function getChats(): Promise<Chat[]> {
-  return DUMMY_CHATS;
+  try {
+    const remote = await listChats();
+    if (remote.length === 0) return DUMMY_CHATS;
+
+    return remote.map((chat) => ({
+      id: chat.id,
+      name: chat.name,
+      preview: chat.preview,
+      avatar: chat.avatar,
+    }));
+  } catch {
+    return DUMMY_CHATS;
+  }
 }

@@ -8,8 +8,8 @@ type HeadsetViewerProps = {
 };
 
 /**
- * Native fallback for the headset model viewer. The interactive 3D view is
- * implemented on web; other platforms show the Vox mark in its place.
+ * Native fallback for the headset model viewer. The 3D view is implemented on
+ * web; other platforms show the Vox mark in its place.
  */
 export function HeadsetViewer({ height = 160, fill = false }: HeadsetViewerProps) {
   if (fill) {
@@ -17,3 +17,6 @@ export function HeadsetViewer({ height = 160, fill = false }: HeadsetViewerProps
   }
   return <VoxLogo size={Math.min(height, 112)} />;
 }
+
+/** Native no-op: the web viewer preloads its OBJ; native has no model to load. */
+export function preloadHeadsetViewer() {}

@@ -12,7 +12,7 @@ import {
 } from 'react-native';
 
 import { EegChart } from '@/components/eeg-chart';
-import { HeadsetViewer } from '@/components/headset-viewer';
+import { HeadsetViewer, preloadHeadsetViewer } from '@/components/headset-viewer';
 import { OutlinedView } from '@/components/outlined-view';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
@@ -424,6 +424,12 @@ export default function TelemetryScreen() {
       setTelemetryState('discovered');
     }, 5000);
     return () => clearTimeout(id);
+  }, [telemetryState]);
+
+  useEffect(() => {
+    // Warm the 13 MB mesh while the user reads the compact connected card, so
+    // opening it can start the dolly-in immediately.
+    if (telemetryState === 'streaming') preloadHeadsetViewer();
   }, [telemetryState]);
 
   const onConnect = (device: HeadsetDevice) => {
